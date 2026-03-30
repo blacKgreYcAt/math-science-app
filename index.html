@@ -431,6 +431,16 @@
       background: radial-gradient(ellipse at center, var(--neon-cyan), transparent 70%);
     }
 
+    .app-card.card-science {
+      --card-color: var(--neon-green);
+      --card-glow:  rgba(0,255,136,0.35);
+      --card-bg:    rgba(0,255,136,0.04);
+    }
+
+    .card-science .card-art-bg {
+      background: radial-gradient(ellipse at center, var(--neon-green), transparent 70%);
+    }
+
     .card-icon {
       font-size: 5rem;
       position: relative;
@@ -791,7 +801,7 @@
     <div class="stats-section reveal">
       <div class="stats-grid">
         <div class="stat-card reveal reveal-delay-1">
-          <span class="stat-number">2</span>
+          <span class="stat-number">3</span>
           <div class="stat-label">學習 APP</div>
         </div>
         <div class="stat-card reveal reveal-delay-2">
@@ -878,6 +888,34 @@
           </div>
         </a>
 
+        <!-- APP 3: 大地觀測站 -->
+        <a class="app-card card-science reveal reveal-delay-3"
+           href="https://nature-science-4.vercel.app/"
+           target="_blank" rel="noopener">
+          <div class="card-glow-bg"></div>
+          <div class="card-art">
+            <div class="card-art-bg"></div>
+            <div class="card-icon">🌍</div>
+            <div class="card-badge">自然科學</div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">大地觀測站</div>
+            <p class="card-desc">
+              親眼見證岩石變土壤的神奇過程！模擬水流侵蝕、海蝕洞形成，還有地震保命3步驟限時挑戰。四年級自然科必玩！
+            </p>
+            <div class="card-tags">
+              <span class="tag">地表變化</span>
+              <span class="tag">風化侵蝕</span>
+              <span class="tag">海蝕洞</span>
+              <span class="tag">地震防災</span>
+            </div>
+            <div class="card-launch">
+              進入冒險
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </div>
+          </div>
+        </a>
+
       </div>
     </div>
   </section>
@@ -944,6 +982,9 @@
       ·
       <a href="https://math-logic-delta.vercel.app/" target="_blank"
          style="color:var(--neon-cyan);text-decoration:none;margin:0 0.5rem;">數感邏輯</a>
+      ·
+      <a href="https://nature-science-4.vercel.app/" target="_blank"
+         style="color:var(--neon-green);text-decoration:none;margin:0 0.5rem;">大地觀測站</a>
     </p>
   </footer>
 
