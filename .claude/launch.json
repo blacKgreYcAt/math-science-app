@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8888", "--directory", "natural-science-app"],
       "port": 8888
+    },
+    {
+      "name": "math-science-app",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8889", "--directory", "math-science-app"],
+      "port": 8889
     }
   ]
 }
