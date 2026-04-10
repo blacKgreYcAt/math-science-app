@@ -441,6 +441,16 @@
       background: radial-gradient(ellipse at center, var(--neon-green), transparent 70%);
     }
 
+    .app-card.card-math-science {
+      --card-color: #ff00ff;
+      --card-glow:  rgba(255,0,255,0.35);
+      --card-bg:    rgba(255,0,255,0.04);
+    }
+
+    .card-math-science .card-art-bg {
+      background: radial-gradient(ellipse at center, #ff00ff, transparent 70%);
+    }
+
     .app-card.card-energy {
       --card-color: var(--neon-gold);
       --card-glow:  rgba(255,215,0,0.35);
@@ -1034,7 +1044,35 @@
           </div>
         </a>
 
-        <a class="app-card card-natural-science reveal reveal-delay-6"
+        <!-- APP 7: 星際數學探險 -->
+        <a class="app-card card-math-science reveal reveal-delay-7"
+           href="https://math-science-app.vercel.app/"
+           target="_blank" rel="noopener">
+          <div class="card-glow-bg"></div>
+          <div class="card-art">
+            <div class="card-art-bg"></div>
+            <div class="card-icon">🔢</div>
+            <div class="card-badge">數學科</div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">星際數學探險</div>
+            <p class="card-desc">
+              用卡牌遊戲和遊戲化闖關探索數學的奧秘！20 個單元、100+ 道題目涵蓋四則運算、幾何、統計等核心概念，隨機出題讓每次練習都是新的冒險。
+            </p>
+            <div class="card-tags">
+              <span class="tag">卡牌自學</span>
+              <span class="tag">隨機出題</span>
+              <span class="tag">20單元</span>
+              <span class="tag">進度追蹤</span>
+            </div>
+            <div class="card-launch">
+              進入冒險
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </div>
+          </div>
+        </a>
+
+        <a class="app-card card-natural-science reveal reveal-delay-8"
            href="https://natural-science-app.vercel.app/"
            target="_blank" rel="noopener">
           <div class="card-glow-bg"></div>
