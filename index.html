@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌟 星際數學探險 - 國小四下互動闖關</title>
+  <script src="questions-data.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans CJK TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1829 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* 星場背景 */
+    canvas#stars-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    /* 頁面容器 */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== 首頁 ===== */
+    .home-page {
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .home-title {
+      font-size: 3.5rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #00f5ff, #00aaff, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(0, 245, 255, 0.3);
+      animation: glow 3s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .home-subtitle {
+      font-size: 1.3rem;
+      margin-bottom: 60px;
+      color: #b8c5d6;
+      font-weight: 300;
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .mode-btn {
+      padding: 30px 40px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: 3px solid;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      min-width: 280px;
+      background: rgba(10, 14, 39, 0.6);
+      backdrop-filter: blur(10px);
+    }
+
+    .mode-btn.game {
+      border-color: #00f5ff;
+      color: #00f5ff;
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+    }
+
+    .mode-btn.game:hover {
+      background: rgba(0, 245, 255, 0.1);
+      box-shadow: 0 0 40px rgba(0, 245, 255, 0.6);
+      transform: translateY(-5px);
+    }
+
+    .mode-btn.card {
+      border-color: #ff00aa;
+      color: #ff00aa;
+      box-shadow: 0 0 20px rgba(255, 0, 170, 0.3);
+    }
+
+    .mode-btn.card:hover {
+      background: rgba(255, 0, 170, 0.1);
+      box-shadow: 0 0 40px rgba(255, 0, 170, 0.6);
+      transform: translateY(-5px);
+    }
+
+    /* ===== 卡牌模式頁面 ===== */
+    .card-mode-page {
+      display: none;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .card-mode-page.active {
+      display: block;
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .card-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #00f5ff;
+    }
+
+    .progress-bar {
+      width: 100%;
+      max-width: 400px;
+      height: 8px;
+      background: rgba(100, 150, 200, 0.2);
+      border-radius: 10px;
+      margin: 20px auto;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00f5ff, #ff00aa);
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .progress-text {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #b8c5d6;
+      margin-top: 10px;
+    }
+
+    .card-container {
+      max-width: 600px;
+      margin: 60px auto;
+      perspective: 1000px;
+    }
+
+    .card {
+      width: 100%;
+      aspect-ratio: 1 / 1.2;
+      background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(255, 0, 170, 0.1));
+      border: 3px solid #00f5ff;
+      border-radius: 20px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: grab;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      user-select: none;
+      backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+      border-color: #ff00aa;
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.4);
+    }
+
+    .card.dragging {
+      opacity: 0.9;
+      cursor: grabbing;
+    }
+
+    .card-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card-question {
+      font-size: 1.5rem;
+      line-height: 1.6;
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+
+    .card-hint {
+      font-size: 0.9rem;
+      color: #00f5ff;
+      margin-top: 20px;
+      font-style: italic;
+    }
+
+    .card-back {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card-back.show {
+      display: flex;
+    }
+
+    .card-answer {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #00ff88;
+      margin-bottom: 30px;
+      text-decoration: underline wavy #ff00aa;
+    }
+
+    .card-explanation {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #d4e4f7;
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 0 10px;
+    }
+
+    .card-steps {
+      text-align: left;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #d4e4f7;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0, 245, 255, 0.1);
+      border-left: 3px solid #00f5ff;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .card-steps div {
+      margin-bottom: 10px;
+    }
+
+    .swipe-hint {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.85rem;
+      color: #00f5ff;
+      opacity: 0.7;
+      animation: swipe-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes swipe-pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* ===== 按鈕 ===== */
+    .button-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: 2px solid;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(10, 14, 39, 0.6);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-next {
+      border-color: #00ff88;
+      color: #00ff88;
+    }
+
+    .btn-next:hover {
+      background: rgba(0, 255, 136, 0.15);
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+      transform: translateY(-3px);
+    }
+
+    .btn-back {
+      border-color: #ff6b6b;
+      color: #ff6b6b;
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 107, 107, 0.15);
+      box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+    }
+
+    .unit-selector {
+      margin: 40px 0;
+      text-align: center;
+    }
+
+    .unit-selector label {
+      margin-right: 15px;
+      font-size: 1.1rem;
+      color: #b8c5d6;
+    }
+
+    .unit-selector select {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: 2px solid #00f5ff;
+      border-radius: 8px;
+      background: rgba(10, 14, 39, 0.8);
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    .unit-selector select:focus {
+      outline: none;
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+    }
+
+    /* ===== 響應式設計 ===== */
+    @media (max-width: 768px) {
+      .home-title {
+        font-size: 2.2rem;
+      }
+
+      .card {
+        min-height: 400px;
+      }
+
+      .card-question {
+        font-size: 1.2rem;
+      }
+
+      .mode-btn {
+        min-width: 200px;
+        padding: 20px 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 星場背景 -->
+  <canvas id="stars-canvas"></canvas>
+
+  <div class="container">
+    <!-- ===== 首頁 ===== -->
+    <div id="homePage" class="home-page">
+      <h1 class="home-title">🌟 星際數學探險</h1>
+      <p class="home-subtitle">國小四年級下學期 數學互動學習</p>
+
+      <div class="mode-selector">
+        <button class="mode-btn game" onclick="goToGameMode()">
+          🎮 遊戲化關卡<br>
+          <span style="font-size: 0.7em; opacity: 0.8;">4個互動遊戲闖關</span>
+        </button>
+        <button class="mode-btn card" onclick="goToCardMode()">
+          🎴 卡牌自學方案<br>
+          <span style="font-size: 0.7em; opacity: 0.8;">隨機題目引導學習</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== 卡牌模式 ===== -->
+    <div id="cardModePage" class="card-mode-page">
+      <div class="card-header">
+        <h1>🎴 卡牌自學模式</h1>
+        <p style="color: #b8c5d6; margin-top: 10px;">左滑卡牌查看答案</p>
+
+        <div class="unit-selector">
+          <label for="unitSelect">選擇單元：</label>
+          <select id="unitSelect" onchange="changeUnit()">
+            <option value="">📚 隨機所有題目</option>
+          </select>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text">
+          <span id="currentQuestion">1</span> / <span id="totalQuestions">10</span>
+        </div>
+      </div>
+
+      <div class="card-container">
+        <div class="card" id="mainCard">
+          <div class="card-content">
+            <div class="card-question" id="questionText">載入中...</div>
+            <div class="card-hint" id="questionTip"></div>
+            <div class="swipe-hint">← 左滑查看答案</div>
+          </div>
+          <div class="card-back">
+            <div class="card-answer" id="answerText"></div>
+            <div id="answerContent"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-back" onclick="resetCard()">重新看題目</button>
+        <button class="btn btn-next" onclick="nextQuestion()" id="nextBtn" disabled>下一題 →</button>
+        <button class="btn btn-back" onclick="backToHome()">返回首頁</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== 星場動畫 =====
+    const canvas = document.getElementById('stars-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function createStars() {
+      stars = [];
+      const count = Math.floor((canvas.width * canvas.height) / 5000);
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.5 + 0.3,
+          alpha: Math.random(),
+          speed: Math.random() * 0.003 + 0.001,
+          phase: Math.random() * Math.PI * 2,
+          color: ['#ffffff', '#00f5ff', '#b400ff', '#ff00aa'][Math.floor(Math.random() * 4)]
+        });
+      }
+    }
+
+    function drawStars(t) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        const a = (Math.sin(t * s.speed + s.phase) + 1) / 2 * 0.8 + 0.15;
+        ctx.fillStyle = s.color;
+        ctx.globalAlpha = a;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    let starAnimationRaf;
+    function animateStars(t) {
+      drawStars(t);
+      starAnimationRaf = requestAnimationFrame(animateStars);
+    }
+
+    resizeCanvas();
+    createStars();
+    starAnimationRaf = requestAnimationFrame(animateStars);
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      createStars();
+    });
+
+    // ===== 題庫數據 =====
+    const questionDatabase = {
+      u1_operations: { title: "四則混合運算", questions: [] },
+      u2_rounding: { title: "概數", questions: [] },
+      u3_quadrilateral: { title: "四邊形性質", questions: [] },
+      u4_volume: { title: "體積", questions: [] },
+      u5_fractions: { title: "分數的加減與轉換", questions: [] },
+      u6_decimals: { title: "小數的加減", questions: [] },
+      u7_area: { title: "周長與面積", questions: [] },
+      u8_time: { title: "時間的計算", questions: [] },
+      u9_operations_adv: { title: "終極密碼戰 (四則運算進階)", questions: [] },
+      u10_geometry_adv: { title: "空間大師 (幾何進階)", questions: [] },
+      u11_fractions_decimals_adv: { title: "魔法市集 (分數與小數進階)", questions: [] },
+      u12_time_large_num_adv: { title: "星際航線 (時間與大數綜合)", questions: [] },
+      u13_length: { title: "長度換算 (公里與公尺)", questions: [] },
+      u14_weight: { title: "重量換算 (公斤與公克)", questions: [] },
+      u15_capacity: { title: "容量換算 (公升與毫升)", questions: [] },
+      u16_charts: { title: "統計與圖表判讀", questions: [] },
+      u17_mixed_fraction_decimal: { title: "小數與分數的羈絆", questions: [] },
+      u18_area_perimeter_adv: { title: "複合圖形大挑戰 (面積與周長)", questions: [] },
+      u19_daily_math: { title: "生活素養：生活中的數學", questions: [] },
+      u20_brain_teasers: { title: "終極大魔王：邏輯推理解謎", questions: [] }
+    };
+
+    // ===== 頁面導航 =====
+    function goToGameMode() {
+      alert('🎮 遊戲化關卡功能開發中...\n預計將包含 4 個互動遊戲！');
+    }
+
+    function goToCardMode() {
+      document.getElementById('homePage').style.display = 'none';
+      document.getElementById('cardModePage').classList.add('active');
+      loadQuestions();
+      loadFirstQuestion();
+      populateUnitSelector();
+    }
+
+    function backToHome() {
+      document.getElementById('homePage').style.display = 'flex';
+      document.getElementById('cardModePage').classList.remove('active');
+      currentQuestions = [];
+      currentIndex = 0;
+    }
+
+    // ===== 卡牌相關函數 =====
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let selectedUnit = '';
+    let isFlipped = false;
+    let touchStartX = 0;
+
+    function loadQuestions() {
+      // 從題庫數據加載所有題目
+      if (typeof MATH_QUESTIONS !== 'undefined') {
+        for (const [unitId, unitData] of Object.entries(MATH_QUESTIONS)) {
+          if (questionDatabase[unitId]) {
+            questionDatabase[unitId].questions = unitData.questions || [];
+          }
+        }
+      } else {
+        // Fallback：如果未載入外部數據，使用示例題目
+        addQuestionsToDatabase([
+          {
+            id: "q1_1", type: "step_by_step",
+            content: "計算 120 + 80 ÷ 4",
+            options: ["50", "140", "150", "200"], answer: "140",
+            steps: ["第一步：先算除法。 80 ÷ 4 = 20", "第二步：再算加法。 120 + 20 = 140"],
+            tip: "沒有括號時，記得先乘除後加減！"
+          },
+          {
+            id: "q1_2", type: "step_by_step",
+            content: "計算 (150 - 30) × 3",
+            options: ["60", "450", "360", "90"], answer: "360",
+            steps: ["第一步：先算括號內。 150 - 30 = 120", "第二步：再算括號外。 120 × 3 = 360"],
+            tip: "括號是國王，一定要先處理！"
+          },
+          {
+            id: "q2_1", type: "select",
+            content: "哥哥想買一台 7349 元的腳踏車，如果他只帶『千元鈔票』，他最少要帶幾張才夠買？",
+            options: ["7000", "8000", "7300", "7400"], answer: "8000",
+            explanation: "因為 7000 元不夠買，只能多帶不能少帶，所以使用『無條件進入法』取到千位，變成 8000 元（8張）。"
+          },
+          {
+            id: "q3_1", type: "geometry",
+            content: "下列哪一種四邊形的『四個角都是直角』，但『四條邊不一定一樣長』？",
+            options: ["正方形", "長方形", "菱形", "梯形"], answer: "長方形",
+            explanation: "長方形的四個角都是 90 度，但只有對邊一樣長。正方形則是四條邊都一樣長。"
+          },
+          {
+            id: "q4_1", type: "volume_count",
+            content: "一個長方體的長是 5 公分、寬是 4 公分、高是 3 公分，請問體積是多少立方公分？",
+            options: ["12", "60", "20", "47"], answer: "60",
+            formula: "長 × 寬 × 高", explanation: "5 × 4 × 3 = 60 立方公分。"
+          }
+        ]);
+      }
+    }
+
+    function addQuestionsToDatabase(questions) {
+      const unitMap = {
+        'q1': 'u1_operations',
+        'q2': 'u2_rounding',
+        'q3': 'u3_quadrilateral',
+        'q4': 'u4_volume',
+        'q5': 'u5_fractions',
+        'q6': 'u6_decimals',
+        'q7': 'u7_area',
+        'q8': 'u8_time',
+        'q9': 'u9_operations_adv',
+        'q10': 'u10_geometry_adv',
+        'q11': 'u11_fractions_decimals_adv',
+        'q12': 'u12_time_large_num_adv',
+        'q13': 'u13_length',
+        'q14': 'u14_weight',
+        'q15': 'u15_capacity',
+        'q16': 'u16_charts',
+        'q17': 'u17_mixed_fraction_decimal',
+        'q18': 'u18_area_perimeter_adv',
+        'q19': 'u19_daily_math',
+        'q20': 'u20_brain_teasers'
+      };
+
+      questions.forEach(q => {
+        // 取出題號前綴，如 q1_1 -> q1 或 q10_1 -> q10
+        const prefix = q.id.split('_')[0];
+        const actualUnitId = unitMap[prefix];
+
+        if (actualUnitId && questionDatabase[actualUnitId]) {
+          questionDatabase[actualUnitId].questions.push(q);
+        }
+      });
+    }
+
+    function loadFirstQuestion() {
+      currentIndex = 0;
+      selectedUnit = '';
+      getAllQuestions();
+    }
+
+    function getAllQuestions() {
+      currentQuestions = [];
+      for (const unit in questionDatabase) {
+        currentQuestions = currentQuestions.concat(questionDatabase[unit].questions);
+      }
+      // 隨機打亂順序
+      currentQuestions = currentQuestions.sort(() => Math.random() - 0.5);
+      if (currentQuestions.length === 0) {
+        currentQuestions = [{
+          id: "demo",
+          content: "歡迎使用卡牌自學模式！\n左滑卡牌查看完整的題目與答案。\n系統將隨機挑選題目給你練習。",
+          answer: "準備開始！",
+          explanation: "數據正在載入中..."
+        }];
+      }
+      displayQuestion();
+    }
+
+    function changeUnit() {
+      const select = document.getElementById('unitSelect');
+      selectedUnit = select.value;
+      currentIndex = 0;
+
+      if (selectedUnit === '') {
+        getAllQuestions();
+      } else {
+        currentQuestions = [...(questionDatabase[selectedUnit]?.questions || [])];
+        currentQuestions = currentQuestions.sort(() => Math.random() - 0.5);
+        displayQuestion();
+      }
+    }
+
+    function populateUnitSelector() {
+      const select = document.getElementById('unitSelect');
+      for (const [key, value] of Object.entries(questionDatabase)) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = value.title;
+        select.appendChild(option);
+      }
+    }
+
+    function displayQuestion() {
+      if (currentQuestions.length === 0) {
+        document.getElementById('questionText').textContent = '沒有題目';
+        return;
+      }
+
+      const q = currentQuestions[currentIndex];
+      isFlipped = false;
+
+      document.getElementById('questionText').textContent = q.content;
+      document.getElementById('questionTip').textContent = q.tip || '';
+      document.getElementById('totalQuestions').textContent = Math.min(currentQuestions.length, 10);
+      document.getElementById('currentQuestion').textContent = currentIndex + 1;
+
+      // 更新進度條
+      const progress = ((currentIndex + 1) / Math.min(currentQuestions.length, 10)) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+
+      // 顯示答案區域
+      let answerHTML = '';
+      if (q.steps) {
+        answerHTML += '<div class="card-steps">';
+        q.steps.forEach((step, idx) => {
+          answerHTML += `<div>${step}</div>`;
+        });
+        answerHTML += '</div>';
+      }
+      if (q.explanation) {
+        answerHTML += `<div class="card-explanation">${q.explanation}</div>`;
+      }
+      document.getElementById('answerContent').innerHTML = answerHTML;
+      document.getElementById('answerText').textContent = q.answer || '✓ 正確';
+
+      // 重置卡牌
+      resetCard();
+      document.getElementById('nextBtn').disabled = true;
+
+      // 綁定滑動事件
+      setupSwipeListener();
+    }
+
+    function resetCard() {
+      isFlipped = false;
+      const cardContent = document.querySelector('.card-content');
+      const cardBack = document.querySelector('.card-back');
+      cardContent.style.display = 'flex';
+      cardBack.classList.remove('show');
+      document.getElementById('nextBtn').disabled = true;
+    }
+
+    function setupSwipeListener() {
+      const card = document.getElementById('mainCard');
+      card.style.cursor = 'grab';
+
+      card.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        card.classList.add('dragging');
+      });
+
+      card.addEventListener('touchmove', (e) => {
+        const currentX = e.touches[0].clientX;
+        const diff = touchStartX - currentX;
+
+        // 左滑超過 50px 就翻轉
+        if (diff > 50 && !isFlipped) {
+          flipCard();
+        }
+      });
+
+      card.addEventListener('touchend', () => {
+        card.classList.remove('dragging');
+      });
+
+      // 桌面滑鼠支持
+      let isMouseDown = false;
+      card.addEventListener('mousedown', (e) => {
+        isMouseDown = true;
+        touchStartX = e.clientX;
+        card.style.cursor = 'grabbing';
+      });
+
+      card.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return;
+        const currentX = e.clientX;
+        const diff = touchStartX - currentX;
+        if (diff > 50 && !isFlipped) {
+          flipCard();
+          isMouseDown = false;
+        }
+      });
+
+      card.addEventListener('mouseup', () => {
+        isMouseDown = false;
+        card.style.cursor = 'grab';
+      });
+    }
+
+    function flipCard() {
+      if (isFlipped) return;
+      isFlipped = true;
+
+      const cardContent = document.querySelector('.card-content');
+      const cardBack = document.querySelector('.card-back');
+
+      cardContent.style.display = 'none';
+      cardBack.classList.add('show');
+      document.getElementById('nextBtn').disabled = false;
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex >= Math.min(currentQuestions.length, 10)) {
+        currentIndex = 0;
+        currentQuestions = currentQuestions.sort(() => Math.random() - 0.5);
+        alert('🎉 完成一輪練習！\n系統已重新打亂題目，繼續加油！');
+      }
+      displayQuestion();
+    }
+
+    // 頁面卸載時清理 RAF
+    window.addEventListener('beforeunload', () => {
+      if (starAnimationRaf) {
+        cancelAnimationFrame(starAnimationRaf);
+      }
+    });
+  </script>
+</body>
+</html>
