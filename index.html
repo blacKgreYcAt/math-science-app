@@ -358,6 +358,64 @@
       box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
     }
 
+    /* ===== 遊戲模式 ===== */
+    .game-mode-page {
+      display: none;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .game-mode-page.active {
+      display: block;
+    }
+
+    .game-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin: 60px 0;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .game-card {
+      background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(255, 0, 170, 0.1));
+      border: 2px solid #00f5ff;
+      border-radius: 15px;
+      padding: 40px 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: #ffffff;
+    }
+
+    .game-card:hover {
+      border-color: #ff00aa;
+      background: linear-gradient(135deg, rgba(0, 245, 255, 0.2), rgba(255, 0, 170, 0.2));
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.5);
+      transform: translateY(-5px);
+    }
+
+    .game-card-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .game-card-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #00f5ff;
+    }
+
+    .game-card-desc {
+      font-size: 0.95rem;
+      color: #b8c5d6;
+      line-height: 1.6;
+    }
+
     /* ===== 響應式設計 ===== */
     @media (max-width: 768px) {
       .home-title {
@@ -375,6 +433,10 @@
       .mode-btn {
         min-width: 200px;
         padding: 20px 30px;
+      }
+
+      .game-selector {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -440,6 +502,84 @@
         <button class="btn btn-back" onclick="resetCard()">重新看題目</button>
         <button class="btn btn-next" onclick="nextQuestion()" id="nextBtn" disabled>下一題 →</button>
         <button class="btn btn-back" onclick="backToHome()">返回首頁</button>
+      </div>
+    </div>
+
+    <!-- ===== 遊戲模式 ===== -->
+    <div id="gameModePage" class="game-mode-page">
+      <div class="card-header">
+        <h1>🎮 遊戲化闖關模式</h1>
+        <p style="color: #b8c5d6; margin-top: 10px;">選擇你喜歡的遊戲方式</p>
+      </div>
+
+      <div class="game-selector">
+        <div class="game-card" onclick="startGame('quiz')">
+          <div class="game-card-icon">📝</div>
+          <div class="game-card-title">選擇題闖關</div>
+          <div class="game-card-desc">
+            快速反應的選擇題遊戲<br>
+            4個選項中選出正確答案
+          </div>
+        </div>
+
+        <div class="game-card" onclick="startGame('fillblank')">
+          <div class="game-card-icon">✏️</div>
+          <div class="game-card-title">填空大挑戰</div>
+          <div class="game-card-desc">
+            根據步驟填入正確答案<br>
+            考驗你的理解能力
+          </div>
+        </div>
+
+        <div class="game-card" onclick="startGame('matching')">
+          <div class="game-card-icon">🔗</div>
+          <div class="game-card-title">配對遊戲</div>
+          <div class="game-card-desc">
+            找出題目與答案的配對<br>
+            訓練邏輯思維
+          </div>
+        </div>
+
+        <div class="game-card" onclick="startGame('speedrun')">
+          <div class="game-card-icon">⚡</div>
+          <div class="game-card-title">計時闖關</div>
+          <div class="game-card-desc">
+            60秒內通過盡可能多的題目<br>
+            挑戰你的速度和準確度
+          </div>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-back" onclick="backToHome()">返回首頁</button>
+      </div>
+    </div>
+
+    <!-- ===== 遊戲執行頁面 ===== -->
+    <div id="gamePlayPage" class="card-mode-page">
+      <div class="card-header">
+        <h1 id="gameTitleHeader">🎮 遊戲</h1>
+        <p style="color: #b8c5d6; margin-top: 10px;" id="gameSubtitle"></p>
+
+        <div class="unit-selector">
+          <label for="gameUnitSelect">選擇單元：</label>
+          <select id="gameUnitSelect" onchange="changeGameUnit()">
+            <option value="">📚 隨機所有題目</option>
+          </select>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="gameProgressFill"></div>
+        </div>
+        <div class="progress-text">
+          <span id="gameScore" style="color: #00ff88;">0</span> / <span id="gameTotal">10</span>
+        </div>
+      </div>
+
+      <div id="gameContent"></div>
+
+      <div class="button-group">
+        <button class="btn btn-back" onclick="exitGame()">退出遊戲</button>
       </div>
     </div>
   </div>
@@ -524,7 +664,9 @@
 
     // ===== 頁面導航 =====
     function goToGameMode() {
-      alert('🎮 遊戲化關卡功能開發中...\n預計將包含 4 個互動遊戲！');
+      document.getElementById('homePage').style.display = 'none';
+      document.getElementById('gameModePage').classList.add('active');
+      initGameMode();
     }
 
     function goToCardMode() {
@@ -533,6 +675,7 @@
       loadQuestions();
       loadFirstQuestion();
       populateUnitSelector();
+      setupSwipeListenerOnce();
     }
 
     function backToHome() {
@@ -548,6 +691,7 @@
     let selectedUnit = '';
     let isFlipped = false;
     let touchStartX = 0;
+    let swipeListenerSetup = false;
 
     function loadQuestions() {
       // 從題庫數據加載所有題目
@@ -715,9 +859,6 @@
       // 重置卡牌
       resetCard();
       document.getElementById('nextBtn').disabled = true;
-
-      // 綁定滑動事件
-      setupSwipeListener();
     }
 
     function resetCard() {
@@ -727,6 +868,12 @@
       cardContent.style.display = 'flex';
       cardBack.classList.remove('show');
       document.getElementById('nextBtn').disabled = true;
+    }
+
+    function setupSwipeListenerOnce() {
+      if (swipeListenerSetup) return;
+      swipeListenerSetup = true;
+      setupSwipeListener();
     }
 
     function setupSwipeListener() {
@@ -797,6 +944,237 @@
       }
       displayQuestion();
     }
+
+    // ===== 遊戲模式相關 =====
+    let currentGameMode = '';
+    let gameQuestions = [];
+    let gameScore = 0;
+    let gameIndex = 0;
+    let gameUnit = '';
+
+    const gameModes = {
+      quiz: { title: '📝 選擇題闖關', subtitle: '選擇正確答案' },
+      fillblank: { title: '✏️ 填空大挑戰', subtitle: '根據步驟填入答案' },
+      matching: { title: '🔗 配對遊戲', subtitle: '找出題目與答案的對應' },
+      speedrun: { title: '⚡ 計時闖關', subtitle: '60秒內通過盡可能多的題目' }
+    };
+
+    function initGameMode() {
+      document.getElementById('homePage').style.display = 'none';
+      document.getElementById('gameModePage').classList.add('active');
+    }
+
+    function startGame(mode) {
+      currentGameMode = mode;
+      gameScore = 0;
+      gameIndex = 0;
+      gameUnit = '';
+
+      document.getElementById('gameModePage').classList.remove('active');
+      document.getElementById('gamePlayPage').classList.add('active');
+
+      const gameInfo = gameModes[mode];
+      document.getElementById('gameTitleHeader').textContent = gameInfo.title;
+      document.getElementById('gameSubtitle').textContent = gameInfo.subtitle;
+
+      loadQuestions();
+      populateGameUnitSelector();
+      loadGameQuestions();
+    }
+
+    function populateGameUnitSelector() {
+      const select = document.getElementById('gameUnitSelect');
+      select.innerHTML = '<option value="">📚 隨機所有題目</option>';
+      for (const [key, value] of Object.entries(questionDatabase)) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = value.title;
+        select.appendChild(option);
+      }
+    }
+
+    function changeGameUnit() {
+      const select = document.getElementById('gameUnitSelect');
+      gameUnit = select.value;
+      gameScore = 0;
+      gameIndex = 0;
+      loadGameQuestions();
+    }
+
+    function loadGameQuestions() {
+      if (gameUnit === '') {
+        gameQuestions = [];
+        for (const unit in questionDatabase) {
+          gameQuestions = gameQuestions.concat(questionDatabase[unit].questions);
+        }
+      } else {
+        gameQuestions = [...(questionDatabase[gameUnit]?.questions || [])];
+      }
+      gameQuestions = gameQuestions.sort(() => Math.random() - 0.5);
+      gameIndex = 0;
+      gameScore = 0;
+      displayGameContent();
+    }
+
+    function displayGameContent() {
+      if (gameQuestions.length === 0) {
+        document.getElementById('gameContent').innerHTML = '<p>沒有題目</p>';
+        return;
+      }
+
+      const q = gameQuestions[gameIndex];
+      const total = Math.min(gameQuestions.length, 10);
+      document.getElementById('gameTotal').textContent = total;
+      document.getElementById('gameScore').textContent = gameIndex + 1;
+      document.getElementById('gameProgressFill').style.width = ((gameIndex + 1) / total * 100) + '%';
+
+      let html = '';
+      switch (currentGameMode) {
+        case 'quiz':
+          html = renderQuizMode(q);
+          break;
+        case 'fillblank':
+          html = renderFillBlankMode(q);
+          break;
+        case 'matching':
+          html = renderMatchingMode(q);
+          break;
+        case 'speedrun':
+          html = renderSpeedRunMode(q);
+          break;
+      }
+      document.getElementById('gameContent').innerHTML = html;
+    }
+
+    function renderQuizMode(q) {
+      const options = q.options.map((opt, idx) => `
+        <button class="game-option" onclick="checkAnswer('${q.answer}', '${opt}')">
+          ${String.fromCharCode(65 + idx)}. ${opt}
+        </button>
+      `).join('');
+      return `
+        <div style="max-width: 600px; margin: 40px auto;">
+          <div style="background: rgba(0, 245, 255, 0.1); border: 2px solid #00f5ff; border-radius: 15px; padding: 30px; margin-bottom: 30px;">
+            <h3 style="font-size: 1.3rem; color: #ffffff; margin-bottom: 20px;">${q.content}</h3>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+              ${options}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFillBlankMode(q) {
+      const steps = (q.steps || []).map(step => `<li>${step}</li>`).join('');
+      return `
+        <div style="max-width: 600px; margin: 40px auto;">
+          <div style="background: rgba(0, 245, 255, 0.1); border: 2px solid #00f5ff; border-radius: 15px; padding: 30px; margin-bottom: 30px;">
+            <h3 style="font-size: 1.3rem; color: #ffffff; margin-bottom: 20px;">${q.content}</h3>
+            ${steps ? `<ol style="text-align: left; color: #d4e4f7; line-height: 2;">${steps}</ol>` : ''}
+            <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+              ${q.options.map(opt => `
+                <button class="game-option" onclick="checkAnswer('${q.answer}', '${opt}')" style="flex: 1; min-width: 120px;">
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMatchingMode(q) {
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      return `
+        <div style="max-width: 600px; margin: 40px auto;">
+          <div style="background: rgba(0, 245, 255, 0.1); border: 2px solid #00f5ff; border-radius: 15px; padding: 30px;">
+            <h3 style="font-size: 1.3rem; color: #ffffff; margin-bottom: 20px;">題目</h3>
+            <div style="background: rgba(255, 0, 170, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 30px; color: #ffffff; font-size: 1.1rem;">
+              ${q.content}
+            </div>
+            <h3 style="font-size: 1.1rem; color: #00ff88; margin-bottom: 15px;">選擇配對的答案</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              ${shuffled.map(opt => `
+                <button class="game-option" onclick="checkAnswer('${q.answer}', '${opt}')" style="text-align: left;">
+                  ✓ ${opt}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSpeedRunMode(q) {
+      return `
+        <div style="max-width: 600px; margin: 40px auto;">
+          <div style="background: rgba(0, 245, 255, 0.1); border: 2px solid #ff6b6b; border-radius: 15px; padding: 30px;">
+            <div id="speedTimer" style="font-size: 2rem; color: #ff6b6b; margin-bottom: 20px; text-align: center; font-weight: bold;">60</div>
+            <h3 style="font-size: 1.3rem; color: #ffffff; margin-bottom: 20px;">${q.content}</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              ${q.options.map((opt, idx) => `
+                <button class="game-option" onclick="checkAnswer('${q.answer}', '${opt}')" style="background: rgba(255, 107, 107, 0.1); border-color: #ff6b6b;">
+                  ${String.fromCharCode(65 + idx)}. ${opt}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function checkAnswer(correct, selected) {
+      if (selected === correct) {
+        gameScore++;
+        document.getElementById('gameScore').textContent = gameScore;
+        const feedback = document.createElement('div');
+        feedback.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 255, 136, 0.9); color: #000; padding: 40px 60px; border-radius: 20px; font-size: 2rem; font-weight: bold; z-index: 1000; animation: fadeOut 1.5s ease-in-out forwards;';
+        feedback.textContent = '✓ 正確！';
+        document.body.appendChild(feedback);
+        setTimeout(() => feedback.remove(), 1500);
+      } else {
+        const feedback = document.createElement('div');
+        feedback.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 107, 107, 0.9); color: #fff; padding: 40px 60px; border-radius: 20px; font-size: 2rem; font-weight: bold; z-index: 1000; animation: fadeOut 1.5s ease-in-out forwards;';
+        feedback.textContent = '✗ 錯誤！';
+        document.body.appendChild(feedback);
+        setTimeout(() => feedback.remove(), 1500);
+      }
+
+      setTimeout(() => {
+        gameIndex++;
+        if (gameIndex >= Math.min(gameQuestions.length, 10)) {
+          finishGame();
+        } else {
+          displayGameContent();
+        }
+      }, 1000);
+    }
+
+    function finishGame() {
+      const total = Math.min(gameQuestions.length, 10);
+      const percentage = Math.round((gameScore / total) * 100);
+      let emoji = '🌟';
+      let message = '優秀！';
+      if (percentage < 50) { emoji = '💪'; message = '繼續加油！'; }
+      else if (percentage < 70) { emoji = '👍'; message = '不錯！'; }
+      else if (percentage < 90) { emoji = '🎉'; message = '很棒！'; }
+
+      const result = `${emoji} 遊戲結束！\n\n${message}\n正確率: ${percentage}%\n${gameScore} / ${total}`;
+      alert(result);
+      goToGameMode();
+    }
+
+    function exitGame() {
+      document.getElementById('gamePlayPage').classList.remove('active');
+      document.getElementById('gameModePage').classList.add('active');
+    }
+
+    // 添加淡出動畫
+    const style = document.createElement('style');
+    style.textContent = `@keyframes fadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }
+    .game-option { padding: 15px 20px; font-size: 1rem; border: 2px solid #00f5ff; border-radius: 10px; background: rgba(10, 14, 39, 0.8); color: #ffffff; cursor: pointer; transition: all 0.3s ease; }
+    .game-option:hover { background: rgba(0, 245, 255, 0.15); box-shadow: 0 0 15px rgba(0, 245, 255, 0.5); }`;
+    document.head.appendChild(style);
 
     // 頁面卸載時清理 RAF
     window.addEventListener('beforeunload', () => {
