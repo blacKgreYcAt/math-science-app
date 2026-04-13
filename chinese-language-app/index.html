@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📚 語文閣樓 - 互動學習平台</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans CJK TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0d0f17 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* 星場背景 */
+    canvas#stars-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    /* 頁面容器 */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== 首頁 ===== */
+    .home-page {
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .home-title {
+      font-size: 3.5rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #d4af37, #f0e68c, #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+      animation: glow 3s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .home-subtitle {
+      font-size: 1.3rem;
+      margin-bottom: 60px;
+      color: #b8c5d6;
+      font-weight: 300;
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .mode-btn {
+      padding: 30px 40px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: 3px solid;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      min-width: 280px;
+      background: rgba(15, 20, 25, 0.6);
+      backdrop-filter: blur(10px);
+    }
+
+    .mode-btn.card {
+      border-color: #d4af37;
+      color: #d4af37;
+    }
+
+    .mode-btn.card:hover {
+      background: rgba(212, 175, 55, 0.2);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .mode-btn.challenge {
+      border-color: #00f5ff;
+      color: #00f5ff;
+    }
+
+    .mode-btn.challenge:hover {
+      background: rgba(0, 245, 255, 0.2);
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* ===== 課程選擇頁面 ===== */
+    .lessons-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      color: #d4af37;
+      margin-bottom: 10px;
+    }
+
+    .page-subtitle {
+      font-size: 1.1rem;
+      color: #b8c5d6;
+    }
+
+    .back-btn {
+      background: linear-gradient(135deg, #d4af37, #f0e68c);
+      color: #0f1419;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 30px;
+      display: inline-block;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+    }
+
+    .lessons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .lesson-card {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(0, 245, 255, 0.05));
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      border-radius: 15px;
+      padding: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lesson-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .lesson-card:hover::before {
+      left: 100%;
+    }
+
+    .lesson-card:hover {
+      border-color: #d4af37;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+      transform: translateY(-5px);
+    }
+
+    .lesson-number {
+      font-size: 1rem;
+      color: #d4af37;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .lesson-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 15px;
+    }
+
+    .lesson-types {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .lesson-type-badge {
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid #d4af37;
+      color: #d4af37;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    /* ===== 答題頁面 ===== */
+    .question-page {
+      min-height: 100vh;
+      padding: 20px 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question-container {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), rgba(0, 245, 255, 0.03));
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      border-radius: 20px;
+      padding: 50px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(212, 175, 55, 0.2);
+      border-radius: 10px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d4af37, #f0e68c);
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: #b8c5d6;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    .question-header {
+      margin-bottom: 40px;
+    }
+
+    .question-type-label {
+      font-size: 0.9rem;
+      color: #d4af37;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .question-text {
+      font-size: 1.5rem;
+      color: #ffffff;
+      line-height: 1.8;
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+
+    /* 易混淆字詞 */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .option-btn {
+      padding: 20px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: 3px solid #d4af37;
+      border-radius: 12px;
+      background: rgba(212, 175, 55, 0.1);
+      color: #d4af37;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .option-btn:hover {
+      background: rgba(212, 175, 55, 0.2);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    }
+
+    .option-btn.selected {
+      background: rgba(212, 175, 55, 0.3);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+    }
+
+    .option-btn.correct {
+      border-color: #00ff00;
+      color: #00ff00;
+      background: rgba(0, 255, 0, 0.1);
+    }
+
+    .option-btn.incorrect {
+      border-color: #ff0000;
+      color: #ff0000;
+      background: rgba(255, 0, 0, 0.1);
+    }
+
+    /* 成語題型 */
+    .idiom-card {
+      background: rgba(0, 245, 255, 0.1);
+      border: 2px solid #00f5ff;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .idiom-title {
+      font-size: 1.8rem;
+      color: #00f5ff;
+      font-weight: bold;
+      margin-bottom: 15px;
+      font-style: italic;
+    }
+
+    .idiom-meaning {
+      color: #b8c5d6;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(0, 245, 255, 0.05);
+      border-left: 4px solid #00f5ff;
+      border-radius: 5px;
+    }
+
+    .fill-input {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.1rem;
+      border: 2px solid #d4af37;
+      border-radius: 10px;
+      background: rgba(212, 175, 55, 0.1);
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+
+    .fill-input::placeholder {
+      color: rgba(212, 175, 55, 0.5);
+    }
+
+    /* 句式排序題型 */
+    .sentence-parts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 30px;
+      min-height: 80px;
+      padding: 20px;
+      background: rgba(0, 245, 255, 0.05);
+      border: 2px dashed rgba(0, 245, 255, 0.3);
+      border-radius: 12px;
+      align-content: flex-start;
+    }
+
+    .part-btn {
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #d4af37, #f0e68c);
+      color: #0f1419;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .part-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+    }
+
+    .part-btn.used {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: scale(0.9);
+    }
+
+    .sentence-result {
+      background: rgba(0, 255, 0, 0.1);
+      border: 2px solid #00ff00;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .sentence-result.show {
+      display: block;
+    }
+
+    .sentence-result.incorrect {
+      background: rgba(255, 0, 0, 0.1);
+      border-color: #ff0000;
+    }
+
+    .result-text {
+      font-size: 1.1rem;
+      color: #00ff00;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .result-text.incorrect {
+      color: #ff0000;
+    }
+
+    .result-sentence {
+      font-size: 1.1rem;
+      color: #ffffff;
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+    }
+
+    /* 提交按鈕 */
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #00f5ff, #00aaff);
+      color: #0f1419;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.6);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .next-btn {
+      background: linear-gradient(135deg, #d4af37, #f0e68c);
+      color: #0f1419;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .next-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+    }
+
+    /* ===== 結果頁面 ===== */
+    .results-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .results-card {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(0, 245, 255, 0.05));
+      border: 2px solid #d4af37;
+      border-radius: 20px;
+      padding: 50px;
+      max-width: 600px;
+    }
+
+    .results-title {
+      font-size: 2.5rem;
+      color: #d4af37;
+      margin-bottom: 30px;
+    }
+
+    .score-circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: conic-gradient(#00ff00 var(--score-percentage), rgba(212, 175, 55, 0.2) 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 30px;
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+    }
+
+    .score-text {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    .stats {
+      margin: 30px 0;
+      text-align: left;
+      background: rgba(0, 245, 255, 0.05);
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #00f5ff;
+    }
+
+    .stat-item {
+      font-size: 1.1rem;
+      margin: 10px 0;
+      color: #b8c5d6;
+    }
+
+    .stat-label {
+      color: #d4af37;
+      font-weight: bold;
+    }
+
+    .home-again-btn {
+      background: linear-gradient(135deg, #d4af37, #f0e68c);
+      color: #0f1419;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 30px;
+    }
+
+    .home-again-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+    }
+
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 15px;
+      }
+
+      .home-title {
+        font-size: 2.5rem;
+      }
+
+      .mode-btn {
+        min-width: 250px;
+        padding: 20px 30px;
+      }
+
+      .question-container {
+        padding: 30px 20px;
+      }
+
+      .lesson-card {
+        padding: 20px;
+      }
+
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .results-card {
+        padding: 30px 20px;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- 首頁 -->
+  <div class="home-page" id="homePage">
+    <div class="container">
+      <h1 class="home-title">📚 語文閣樓</h1>
+      <p class="home-subtitle" id="homeSubtitle">國小四下 語文互動學習</p>
+      <div class="mode-selector">
+        <button class="mode-btn card" onclick="startCardMode()">
+          📖 卡牌模式<br><span style="font-size: 0.8em; opacity: 0.8;">逐課複習</span>
+        </button>
+        <button class="mode-btn challenge" onclick="startChallengeMode()">
+          ⚡ 智慧闖關<br><span style="font-size: 0.8em; opacity: 0.8;">隨機混合</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 課程選擇頁面 -->
+  <div class="lessons-page" id="lessonsPage">
+    <div class="container">
+      <button class="back-btn" onclick="goHome()">← 返回首頁</button>
+      <div class="page-header">
+        <h2 class="page-title">📖 卡牌模式</h2>
+        <p class="page-subtitle">選擇課程開始學習</p>
+      </div>
+      <div class="lessons-grid" id="lessonsGrid"></div>
+    </div>
+  </div>
+
+  <!-- 答題頁面 -->
+  <div class="question-page" id="questionPage">
+    <div class="container">
+      <button class="back-btn" onclick="goHome()">← 返回首頁</button>
+      <div class="question-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText"></div>
+
+        <div class="question-header" id="questionHeader"></div>
+
+        <div id="questionContent"></div>
+
+        <div class="action-buttons" id="actionButtons"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 結果頁面 -->
+  <div class="results-page" id="resultsPage">
+    <div class="container">
+      <div class="results-card">
+        <h2 class="results-title">🎉 完成挑戰！</h2>
+        <div class="score-circle">
+          <div class="score-text" id="scoreText">0/0</div>
+        </div>
+        <div class="stats">
+          <div class="stat-item">
+            <span class="stat-label">正確率：</span>
+            <span id="accuracyText">0%</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">得分：</span>
+            <span id="pointsText">0分</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">用時：</span>
+            <span id="timeText">0秒</span>
+          </div>
+        </div>
+        <button class="home-again-btn" onclick="goHome()">← 返回首頁</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== 配置和狀態 =====
+    const state = {
+      currentPage: 'home',
+      currentLesson: null,
+      currentMode: 'card', // 'card' 或 'challenge'
+      currentQuestionIndex: 0,
+      questions: [],
+      correctAnswers: 0,
+      startTime: null,
+      grade: '4-2',
+      lessonData: null
+    };
+
+    // ===== 初始化 =====
+    async function init() {
+      // 從 URL 參數讀取年級
+      const params = new URLSearchParams(window.location.search);
+      state.grade = params.get('grade') || '4-2';
+
+      // 更新首頁副標題
+      updateHomeSubtitle();
+
+      // 加載數據
+      await loadLessonData();
+
+      // 初始化星場背景
+      drawStars();
+
+      // 監聽窗口大小變化
+      window.addEventListener('resize', drawStars);
+    }
+
+    function updateHomeSubtitle() {
+      const gradeMap = {
+        '4-2': '國小四年級下學期',
+        '5-1': '國小五年級上學期',
+        '5-2': '國小五年級下學期',
+        '6-1': '國小六年級上學期',
+        '6-2': '國小六年級下學期'
+      };
+      document.getElementById('homeSubtitle').textContent =
+        `${gradeMap[state.grade] || '國小四下'} 語文互動學習`;
+    }
+
+    async function loadLessonData() {
+      try {
+        const response = await fetch('chinese_db.json');
+        state.lessonData = await response.json();
+      } catch (error) {
+        console.error('無法加載課程數據：', error);
+        state.lessonData = { lessons: [] };
+      }
+    }
+
+    // ===== 頁面導航 =====
+    function showPage(pageName) {
+      document.getElementById('homePage').classList.add('hidden');
+      document.getElementById('lessonsPage').classList.add('hidden');
+      document.getElementById('questionPage').classList.add('hidden');
+      document.getElementById('resultsPage').classList.add('hidden');
+
+      switch(pageName) {
+        case 'home':
+          document.getElementById('homePage').classList.remove('hidden');
+          state.currentPage = 'home';
+          break;
+        case 'lessons':
+          document.getElementById('lessonsPage').classList.remove('hidden');
+          state.currentPage = 'lessons';
+          renderLessons();
+          break;
+        case 'question':
+          document.getElementById('questionPage').classList.remove('hidden');
+          state.currentPage = 'question';
+          break;
+        case 'results':
+          document.getElementById('resultsPage').classList.remove('hidden');
+          state.currentPage = 'results';
+          break;
+      }
+    }
+
+    function startCardMode() {
+      state.currentMode = 'card';
+      state.currentLesson = null;
+      state.currentQuestionIndex = 0;
+      state.questions = [];
+      state.correctAnswers = 0;
+      showPage('lessons');
+    }
+
+    function startChallengeMode() {
+      state.currentMode = 'challenge';
+      // 從所有課程隨機混合題目
+      state.questions = [];
+      state.correctAnswers = 0;
+      if (state.lessonData && state.lessonData.lessons) {
+        state.lessonData.lessons.forEach(lesson => {
+          const confusingWords = lesson.confusingWords || [];
+          const idioms = lesson.idioms || [];
+          const sentences = lesson.sentences || [];
+
+          confusingWords.forEach(q => {
+            state.questions.push({
+              ...q,
+              type: 'confusingWord',
+              lessonId: lesson.lessonId
+            });
+          });
+
+          idioms.forEach(q => {
+            state.questions.push({
+              ...q,
+              type: 'idiom',
+              lessonId: lesson.lessonId
+            });
+          });
+
+          sentences.forEach(q => {
+            state.questions.push({
+              ...q,
+              type: 'sentence',
+              lessonId: lesson.lessonId
+            });
+          });
+        });
+      }
+
+      // 隨機排序
+      state.questions.sort(() => Math.random() - 0.5);
+      state.currentQuestionIndex = 0;
+      state.startTime = Date.now();
+      showPage('question');
+      displayQuestion();
+    }
+
+    function goHome() {
+      showPage('home');
+    }
+
+    // ===== 課程頁面 =====
+    function renderLessons() {
+      const lessonsGrid = document.getElementById('lessonsGrid');
+      lessonsGrid.innerHTML = '';
+
+      if (!state.lessonData || !state.lessonData.lessons) {
+        lessonsGrid.innerHTML = '<p style="color: #d4af37;">無法加載課程...</p>';
+        return;
+      }
+
+      state.lessonData.lessons.forEach(lesson => {
+        const card = document.createElement('div');
+        card.className = 'lesson-card';
+        card.onclick = () => selectLesson(lesson.lessonId);
+
+        const hasConfusing = lesson.confusingWords && lesson.confusingWords.length > 0;
+        const hasIdioms = lesson.idioms && lesson.idioms.length > 0;
+        const hasSentences = lesson.sentences && lesson.sentences.length > 0;
+
+        let badges = '';
+        if (hasConfusing) badges += '<span class="lesson-type-badge">字詞</span>';
+        if (hasIdioms) badges += '<span class="lesson-type-badge">成語</span>';
+        if (hasSentences) badges += '<span class="lesson-type-badge">句式</span>';
+
+        card.innerHTML = `
+          <div class="lesson-number">第 ${lesson.lessonId} 課</div>
+          <div class="lesson-title">${lesson.title}</div>
+          <div class="lesson-types">${badges}</div>
+        `;
+
+        lessonsGrid.appendChild(card);
+      });
+    }
+
+    function selectLesson(lessonId) {
+      const lesson = state.lessonData.lessons.find(l => l.lessonId === lessonId);
+      if (!lesson) return;
+
+      state.currentLesson = lesson;
+      state.questions = [];
+      state.correctAnswers = 0;
+      state.currentQuestionIndex = 0;
+
+      // 組合該課的所有題目
+      const confusingWords = lesson.confusingWords || [];
+      const idioms = lesson.idioms || [];
+      const sentences = lesson.sentences || [];
+
+      confusingWords.forEach(q => {
+        state.questions.push({
+          ...q,
+          type: 'confusingWord'
+        });
+      });
+
+      idioms.forEach(q => {
+        state.questions.push({
+          ...q,
+          type: 'idiom'
+        });
+      });
+
+      sentences.forEach(q => {
+        state.questions.push({
+          ...q,
+          type: 'sentence'
+        });
+      });
+
+      state.startTime = Date.now();
+      showPage('question');
+      displayQuestion();
+    }
+
+    // ===== 答題頁面 =====
+    function displayQuestion() {
+      if (state.currentQuestionIndex >= state.questions.length) {
+        showResults();
+        return;
+      }
+
+      const question = state.questions[state.currentQuestionIndex];
+      const progress = state.currentQuestionIndex + 1;
+      const total = state.questions.length;
+
+      // 更新進度條
+      const progressPercent = (progress / total) * 100;
+      document.getElementById('progressFill').style.width = progressPercent + '%';
+      document.getElementById('progressText').textContent = `第 ${progress} 題 / 共 ${total} 題`;
+
+      // 渲染題目
+      const header = document.getElementById('questionHeader');
+      const content = document.getElementById('questionContent');
+      const buttons = document.getElementById('actionButtons');
+
+      header.innerHTML = '';
+      content.innerHTML = '';
+      buttons.innerHTML = '';
+
+      switch(question.type) {
+        case 'confusingWord':
+          renderConfusingWord(question, header, content, buttons);
+          break;
+        case 'idiom':
+          renderIdiom(question, header, content, buttons);
+          break;
+        case 'sentence':
+          renderSentence(question, header, content, buttons);
+          break;
+      }
+    }
+
+    function renderConfusingWord(question, header, content, buttons) {
+      header.innerHTML = `<div class="question-type-label">易混淆字詞</div>`;
+
+      content.innerHTML = `<div class="question-text">${question.question}</div>`;
+
+      const optionsGrid = document.createElement('div');
+      optionsGrid.className = 'options-grid';
+
+      question.options.forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = option;
+        btn.onclick = () => selectConfusingWordOption(btn, option, question);
+        optionsGrid.appendChild(btn);
+      });
+
+      content.appendChild(optionsGrid);
+
+      buttons.innerHTML = `
+        <button class="submit-btn" onclick="checkConfusingWord(this)" disabled>
+          提交答案
+        </button>
+      `;
+    }
+
+    function selectConfusingWordOption(btn, option, question) {
+      // 移除其他選項的 selected 樣式
+      const allBtns = btn.parentElement.querySelectorAll('.option-btn');
+      allBtns.forEach(b => b.classList.remove('selected'));
+
+      btn.classList.add('selected');
+      btn.dataset.selected = option;
+
+      // 啟用提交按鈕
+      const submitBtn = document.querySelector('.submit-btn');
+      submitBtn.disabled = false;
+      submitBtn.dataset.selectedAnswer = option;
+      submitBtn.dataset.questionId = question.questionId;
+    }
+
+    function checkConfusingWord(btn) {
+      const selectedAnswer = btn.dataset.selectedAnswer;
+      const questionId = btn.dataset.questionId;
+      const question = state.questions[state.currentQuestionIndex];
+
+      const isCorrect = selectedAnswer === question.correctAnswer;
+
+      if (isCorrect) {
+        state.correctAnswers++;
+        // 顯示正確
+        const selectedBtn = document.querySelector('.option-btn.selected');
+        selectedBtn.classList.remove('selected');
+        selectedBtn.classList.add('correct');
+      } else {
+        // 顯示錯誤
+        const selectedBtn = document.querySelector('.option-btn.selected');
+        selectedBtn.classList.remove('selected');
+        selectedBtn.classList.add('incorrect');
+
+        // 顯示正確答案
+        const allBtns = document.querySelectorAll('.option-btn');
+        allBtns.forEach(b => {
+          if (b.textContent === question.correctAnswer) {
+            b.classList.add('correct');
+          }
+        });
+      }
+
+      // 顯示解釋
+      const explanation = document.createElement('div');
+      explanation.style.marginTop = '20px';
+      explanation.style.padding = '15px';
+      explanation.style.backgroundColor = 'rgba(0, 245, 255, 0.1)';
+      explanation.style.border = '2px solid #00f5ff';
+      explanation.style.borderRadius = '10px';
+      explanation.style.color = '#b8c5d6';
+      explanation.innerHTML = `<strong>解釋：</strong> ${question.explanation}`;
+      document.getElementById('questionContent').appendChild(explanation);
+
+      // 顯示下一步按鈕
+      const submitBtn = document.querySelector('.submit-btn');
+      submitBtn.textContent = '下一題 →';
+      submitBtn.onclick = () => nextQuestion();
+    }
+
+    function renderIdiom(question, header, content, buttons) {
+      header.innerHTML = `<div class="question-type-label">成語理解</div>`;
+
+      const idiomCard = document.createElement('div');
+      idiomCard.className = 'idiom-card';
+      idiomCard.innerHTML = `
+        <div class="idiom-title">${question.idiom}</div>
+        <div class="idiom-meaning">${question.explanation}</div>
+      `;
+      content.appendChild(idiomCard);
+
+      if (question.questionType === 'fill') {
+        const exampleText = document.createElement('div');
+        exampleText.style.marginBottom = '20px';
+        exampleText.innerHTML = `<strong>例句：</strong><br><span style="color: #b8c5d6;">${question.example}</span>`;
+        content.appendChild(exampleText);
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'fill-input';
+        input.placeholder = '請輸入正確的成語';
+        content.appendChild(input);
+
+        buttons.innerHTML = `
+          <button class="submit-btn" onclick="checkIdiom(this, '${question.idiom}')">
+            提交答案
+          </button>
+        `;
+      }
+    }
+
+    function checkIdiom(btn, correctAnswer) {
+      const input = document.querySelector('.fill-input');
+      const userAnswer = input.value.trim();
+      const isCorrect = userAnswer === correctAnswer;
+
+      if (isCorrect) {
+        state.correctAnswers++;
+        input.style.borderColor = '#00ff00';
+        input.style.background = 'rgba(0, 255, 0, 0.1)';
+        input.disabled = true;
+      } else {
+        input.style.borderColor = '#ff0000';
+        input.style.background = 'rgba(255, 0, 0, 0.1)';
+        input.disabled = true;
+      }
+
+      // 顯示結果
+      const resultDiv = document.createElement('div');
+      resultDiv.style.marginTop = '20px';
+      resultDiv.style.padding = '15px';
+      resultDiv.style.backgroundColor = isCorrect ? 'rgba(0, 255, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)';
+      resultDiv.style.border = isCorrect ? '2px solid #00ff00' : '2px solid #ff0000';
+      resultDiv.style.borderRadius = '10px';
+      resultDiv.style.color = isCorrect ? '#00ff00' : '#ff0000';
+      resultDiv.innerHTML = isCorrect ? '<strong>✓ 正確！</strong>' : `<strong>✗ 錯誤！正確答案是：${correctAnswer}</strong>`;
+      document.getElementById('questionContent').appendChild(resultDiv);
+
+      // 下一題按鈕
+      btn.textContent = '下一題 →';
+      btn.onclick = () => nextQuestion();
+    }
+
+    function renderSentence(question, header, content, buttons) {
+      header.innerHTML = `<div class="question-type-label">句式排序</div>`;
+
+      const questionText = document.createElement('div');
+      questionText.className = 'question-text';
+      questionText.textContent = question.question;
+      content.appendChild(questionText);
+
+      // 隨機排序顯示順序
+      const shuffledParts = [...question.parts].sort(() => Math.random() - 0.5);
+
+      const partsContainer = document.createElement('div');
+      partsContainer.className = 'sentence-parts';
+      partsContainer.id = 'sentenceParts';
+
+      shuffledParts.forEach((part, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'part-btn';
+        btn.textContent = part;
+        btn.dataset.part = part;
+        btn.dataset.index = index;
+        btn.onclick = () => selectPart(btn, question);
+        partsContainer.appendChild(btn);
+      });
+
+      content.appendChild(partsContainer);
+
+      // 已選擇的句子顯示
+      const selectedContainer = document.createElement('div');
+      selectedContainer.style.marginTop = '20px';
+      selectedContainer.style.padding = '15px';
+      selectedContainer.style.backgroundColor = 'rgba(212, 175, 55, 0.1)';
+      selectedContainer.style.border = '2px solid #d4af37';
+      selectedContainer.style.borderRadius = '10px';
+      selectedContainer.style.minHeight = '60px';
+      selectedContainer.style.display = 'flex';
+      selectedContainer.style.flexWrap = 'wrap';
+      selectedContainer.style.gap = '8px';
+      selectedContainer.style.alignContent = 'flex-start';
+      selectedContainer.id = 'selectedParts';
+      content.appendChild(selectedContainer);
+
+      buttons.innerHTML = `
+        <button class="submit-btn" onclick="checkSentence(this)" disabled>
+          提交答案
+        </button>
+        <button class="next-btn" onclick="resetSentence()">重置</button>
+      `;
+    }
+
+    function selectPart(btn, question) {
+      const part = btn.dataset.part;
+
+      // 檢查是否已選擇
+      const selectedParts = document.getElementById('selectedParts');
+      const existingParts = Array.from(selectedParts.children).map(p => p.textContent);
+
+      if (existingParts.includes(part)) {
+        // 移除該部分
+        Array.from(selectedParts.children).forEach(p => {
+          if (p.textContent === part) {
+            p.remove();
+          }
+        });
+        btn.classList.remove('used');
+      } else {
+        // 添加該部分
+        const selectedBtn = document.createElement('button');
+        selectedBtn.style.cssText = `
+          padding: 10px 15px;
+          background: linear-gradient(135deg, #d4af37, #f0e68c);
+          color: #0f1419;
+          border: none;
+          border-radius: 8px;
+          font-weight: bold;
+          cursor: pointer;
+          font-size: 0.95rem;
+        `;
+        selectedBtn.textContent = part;
+        selectedBtn.onclick = () => removePart(selectedBtn, part, btn);
+        selectedParts.appendChild(selectedBtn);
+        btn.classList.add('used');
+      }
+
+      // 啟用提交按鈕
+      if (selectedParts.children.length > 0) {
+        document.querySelector('.submit-btn').disabled = false;
+      } else {
+        document.querySelector('.submit-btn').disabled = true;
+      }
+    }
+
+    function removePart(selectedBtn, part, sourceBtn) {
+      selectedBtn.remove();
+      sourceBtn.classList.remove('used');
+
+      // 禁用提交按鈕
+      const selectedParts = document.getElementById('selectedParts');
+      if (selectedParts.children.length === 0) {
+        document.querySelector('.submit-btn').disabled = true;
+      }
+    }
+
+    function resetSentence() {
+      document.getElementById('selectedParts').innerHTML = '';
+      document.querySelectorAll('.part-btn').forEach(btn => {
+        btn.classList.remove('used');
+      });
+      document.querySelector('.submit-btn').disabled = true;
+    }
+
+    function checkSentence(btn) {
+      const question = state.questions[state.currentQuestionIndex];
+      const selectedParts = Array.from(document.getElementById('selectedParts').children)
+        .map(el => el.textContent);
+
+      const isCorrect = JSON.stringify(selectedParts) === JSON.stringify(question.correctOrder);
+
+      if (isCorrect) {
+        state.correctAnswers++;
+      }
+
+      // 顯示結果
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'sentence-result show';
+      if (!isCorrect) {
+        resultDiv.classList.add('incorrect');
+      }
+
+      const resultText = document.createElement('div');
+      resultText.className = 'result-text';
+      if (!isCorrect) {
+        resultText.classList.add('incorrect');
+      }
+      resultText.textContent = isCorrect ? '✓ 正確！' : '✗ 順序有誤';
+      resultDiv.appendChild(resultText);
+
+      const sentenceDiv = document.createElement('div');
+      sentenceDiv.className = 'result-sentence';
+      sentenceDiv.textContent = `正確答案：${question.correctSentence}`;
+      resultDiv.appendChild(sentenceDiv);
+
+      document.getElementById('questionContent').appendChild(resultDiv);
+
+      // 禁用所有按鈕
+      document.querySelectorAll('.part-btn').forEach(b => {
+        b.disabled = true;
+        b.style.opacity = '0.5';
+      });
+
+      // 下一題按鈕
+      btn.textContent = '下一題 →';
+      btn.onclick = () => nextQuestion();
+    }
+
+    function nextQuestion() {
+      state.currentQuestionIndex++;
+      displayQuestion();
+    }
+
+    // ===== 結果頁面 =====
+    function showResults() {
+      const elapsedSeconds = Math.floor((Date.now() - state.startTime) / 1000);
+      const total = state.questions.length;
+      const accuracy = Math.round((state.correctAnswers / total) * 100);
+      const points = state.correctAnswers * 10;
+
+      const scorePercent = (state.correctAnswers / total) * 100;
+      document.getElementById('scoreText').textContent = `${state.correctAnswers}/${total}`;
+      document.getElementById('accuracyText').textContent = `${accuracy}%`;
+      document.getElementById('pointsText').textContent = `${points}分`;
+      document.getElementById('timeText').textContent = `${elapsedSeconds}秒`;
+
+      // 設置圓形進度條
+      document.querySelector('.score-circle').style.setProperty('--score-percentage', scorePercent + '%');
+
+      showPage('results');
+    }
+
+    // ===== 星場背景 =====
+    function drawStars() {
+      const canvas = document.getElementById('stars-canvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ffffff';
+
+      for (let i = 0; i < 100; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const radius = Math.random() * 1.5;
+        const opacity = Math.random() * 0.7 + 0.3;
+
+        ctx.save();
+        ctx.globalAlpha = opacity;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // ===== 頁面加載 =====
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
