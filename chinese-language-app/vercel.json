@@ -1,4 +1,7 @@
 {
+  "projectId": "prj_chinese_language_app",
+  "orgId": "team_chinese_edu",
+  "name": "chinese-language-learning-app",
   "buildCommand": "echo 'Static site'",
   "outputDirectory": "."
 }
