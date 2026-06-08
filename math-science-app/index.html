@@ -120,6 +120,18 @@
       transform: translateY(-5px);
     }
 
+    .mode-btn.time-conversion {
+      border-color: #ff00aa;
+      color: #ff00aa;
+      box-shadow: 0 0 20px rgba(255, 0, 170, 0.3);
+    }
+
+    .mode-btn.time-conversion:hover {
+      background: rgba(255, 0, 170, 0.1);
+      box-shadow: 0 0 40px rgba(255, 0, 170, 0.6);
+      transform: translateY(-5px);
+    }
+
     /* ===== 卡牌模式頁面 ===== */
     .card-mode-page {
       display: none;
@@ -460,7 +472,7 @@
           🎴 卡牌自學方案<br>
           <span style="font-size: 0.7em; opacity: 0.8;">隨機題目引導學習</span>
         </button>
-        <button class="mode-btn time-conversion" onclick="goToTimeConversionModule()" style="border-color: #ff00aa; background: rgba(255, 0, 170, 0.1);">
+        <button class="mode-btn time-conversion" onclick="goToTimeConversionModule()">
           🕐 時間換算專項<br>
           <span style="font-size: 0.7em; opacity: 0.8;">跨日計算 + 詳細教學</span>
         </button>
