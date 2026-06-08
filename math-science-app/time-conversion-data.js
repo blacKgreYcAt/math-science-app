@@ -315,15 +315,16 @@ const TIME_CONVERSION_TUTORIAL = {
         `
       },
       {
-        heading: '🎨 時間分解視覺化 - 30小時如何分解？',
+        heading: '🎨 時間分解視覺化 - 小時如何分解為天？',
         content: `
           <div class="time-decomposition">
             <div class="decomposition-header">
-              <div class="decomposition-title">30小時 = ? 天 + ? 小時</div>
-              <div class="decomposition-buttons" style="display: flex; gap: 10px; margin-top: 12px;">
-                <button onclick="visualizeDecomposition(30)" class="decomposition-btn" style="background: rgba(0,245,255,0.15); border: 2px solid #00f5ff; color: #00f5ff; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">30小時</button>
-                <button onclick="visualizeDecomposition(36)" class="decomposition-btn" style="background: rgba(0,245,255,0.15); border: 2px solid #00f5ff; color: #00f5ff; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">36小時</button>
-                <button onclick="visualizeDecomposition(48)" class="decomposition-btn" style="background: rgba(0,245,255,0.15); border: 2px solid #00f5ff; color: #00f5ff; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">48小時</button>
+              <div class="decomposition-title">小時 = ? 天 + ? 小時</div>
+              <div class="decomposition-hint" style="color: #b8c5d6; font-size: 14px; margin-top: 8px; margin-bottom: 12px;">💡 點擊下方按鈕，選擇不同的小時數查看分解過程</div>
+              <div class="decomposition-buttons" style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+                <button onclick="visualizeDecomposition(30)" class="decomposition-btn" style="background: rgba(0,245,255,0.15); border: 2px solid #00f5ff; color: #00f5ff; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">試試 30小時</button>
+                <button onclick="visualizeDecomposition(36)" class="decomposition-btn" style="background: rgba(0,245,255,0.15); border: 2px solid #00f5ff; color: #00f5ff; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">試試 36小時</button>
+                <button onclick="visualizeDecomposition(48)" class="decomposition-btn" style="background: rgba(0,245,255,0.15); border: 2px solid #00f5ff; color: #00f5ff; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">試試 48小時</button>
               </div>
             </div>
 
@@ -422,11 +423,12 @@ const TIME_CONVERSION_TUTORIAL = {
         content: `
           <div class="time-decomposition-reverse">
             <div class="decomposition-header">
-              <div class="decomposition-title">反推：30小時前是什麼時候？</div>
+              <div class="decomposition-title">往回推 ? 小時 = 往回推 ? 天 + ? 小時</div>
+              <div class="decomposition-hint" style="color: #b8c5d6; font-size: 14px; margin-top: 8px; margin-bottom: 12px;">💡 點擊下方按鈕，選擇不同的小時數查看反向分解過程</div>
               <div class="decomposition-buttons" style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
-                <button onclick="visualizeReverseDecomposition(30)" class="decomposition-btn" style="background: rgba(255,0,170,0.15); border: 2px solid #ff00aa; color: #ff00aa; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">往回推30小時</button>
-                <button onclick="visualizeReverseDecomposition(36)" class="decomposition-btn" style="background: rgba(255,0,170,0.15); border: 2px solid #ff00aa; color: #ff00aa; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">往回推36小時</button>
-                <button onclick="visualizeReverseDecomposition(48)" class="decomposition-btn" style="background: rgba(255,0,170,0.15); border: 2px solid #ff00aa; color: #ff00aa; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">往回推48小時</button>
+                <button onclick="visualizeReverseDecomposition(30)" class="decomposition-btn" style="background: rgba(255,0,170,0.15); border: 2px solid #ff00aa; color: #ff00aa; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">往回推 30小時</button>
+                <button onclick="visualizeReverseDecomposition(36)" class="decomposition-btn" style="background: rgba(255,0,170,0.15); border: 2px solid #ff00aa; color: #ff00aa; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">往回推 36小時</button>
+                <button onclick="visualizeReverseDecomposition(48)" class="decomposition-btn" style="background: rgba(255,0,170,0.15); border: 2px solid #ff00aa; color: #ff00aa; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">往回推 48小時</button>
               </div>
             </div>
 
