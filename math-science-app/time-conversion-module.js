@@ -768,14 +768,24 @@ function goToTimeConversionModule() {
   const timeConvEl = document.getElementById('timeConversionPage');
 
   if (homePageEl) homePageEl.style.display = 'none';
-  if (cardModeEl) cardModeEl.style.display = 'none';
-  if (gameModeEl) gameModeEl.style.display = 'none';
-  if (gamePlayEl) gamePlayEl.style.display = 'none';
+  if (cardModeEl) {
+    cardModeEl.style.display = 'none';
+    cardModeEl.classList.remove('active');
+  }
+  if (gameModeEl) {
+    gameModeEl.style.display = 'none';
+    gameModeEl.classList.remove('active');
+  }
+  if (gamePlayEl) {
+    gamePlayEl.style.display = 'none';
+    gamePlayEl.classList.remove('active');
+  }
   if (tutorialEl) tutorialEl.style.display = 'none';
 
   // 顯示時間換算頁面
   if (timeConvEl) {
     timeConvEl.style.display = 'block';
+    timeConvEl.classList.add('active');
     initTimeConversionModule();
   }
 }

@@ -593,26 +593,36 @@
     </div>
 
     <!-- ===== 時間換算專項模塊 ===== -->
-    <div id="timeConversionPage" class="hidden" style="display: none;">
-      <div class="time-conversion-header">
-        <button onclick="backToTimeConversion()" class="btn-back">← 返回首頁</button>
+    <div id="timeConversionPage" class="card-mode-page">
+      <div class="card-header">
+        <button onclick="backToTimeConversion()" class="btn btn-back">← 返回首頁</button>
         <h1>🕐 時間換算專項</h1>
-        <p>掌握跨日計算的奧秘</p>
+        <p style="color: #b8c5d6; margin-top: 10px;">掌握跨日計算的奧秘</p>
       </div>
 
       <!-- 教學部分 -->
       <div id="timeConversionTutorial" class="time-conversion-tutorial">
-        <!-- 動態加載教學內容 -->
+        <div id="tutorialContent" style="max-width: 900px; margin: 0 auto;">
+          <!-- 動態加載教學內容 -->
+        </div>
       </div>
 
       <!-- 題庫部分 -->
-      <div id="timeConversionQuizPage" class="time-conversion-quiz hidden" style="display: none;">
-        <div class="quiz-header">
-          <h2 id="quizTitle">基礎題庫</h2>
-          <div id="quizProgress" class="progress-section"></div>
+      <div id="timeConversionQuizPage" style="display: none;">
+        <div class="card-header">
+          <h2 id="quizTitle" style="color: #00f5ff;">基礎題庫</h2>
+          <div class="progress-bar">
+            <div class="progress-fill" id="quizProgress"></div>
+          </div>
+          <div class="progress-text">
+            <span id="quizCurrentIndex">1</span> / <span id="quizTotal">15</span>
+          </div>
         </div>
-        <div id="quizProblemContainer" class="quiz-container">
+        <div id="quizProblemContainer" style="max-width: 800px; margin: 40px auto;">
           <!-- 動態加載題目 -->
+        </div>
+        <div class="button-group">
+          <button class="btn btn-back" onclick="backToTimeConversionHome()">返回教學</button>
         </div>
       </div>
     </div>
@@ -1555,6 +1565,179 @@
         padding: 20px 0;
         position: relative;
         z-index: 1;
+      }
+
+      /* Time Conversion Styles */
+      #timeConversionPage {
+        display: none;
+        min-height: 100vh;
+        padding: 40px 20px;
+      }
+
+      #timeConversionPage.active {
+        display: block;
+      }
+
+      .time-conversion-tutorial {
+        margin: 60px 0 40px;
+      }
+
+      .tutorial-tabs {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .tab-btn {
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: bold;
+        border: 2px solid #00f5ff;
+        border-radius: 12px;
+        background: rgba(10, 14, 39, 0.6);
+        color: #00f5ff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+      }
+
+      .tab-btn:hover {
+        background: rgba(0, 245, 255, 0.15);
+        box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+        transform: translateY(-3px);
+      }
+
+      .tab-btn.active {
+        background: rgba(0, 245, 255, 0.2);
+        box-shadow: 0 0 30px rgba(0, 245, 255, 0.6);
+      }
+
+      .tutorial-chapter {
+        max-width: 900px;
+        margin: 0 auto 40px;
+        padding: 30px;
+        background: rgba(0, 245, 255, 0.05);
+        border: 2px solid #00f5ff;
+        border-radius: 15px;
+      }
+
+      .chapter-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .chapter-header h2 {
+        font-size: 2rem;
+        color: #00f5ff;
+        margin-bottom: 10px;
+        text-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+      }
+
+      .chapter-header p {
+        color: #d4e4f7;
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+
+      .chapter-info {
+        margin-top: 15px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .duration {
+        color: #00ff88;
+        font-weight: bold;
+      }
+
+      .chapter-section {
+        margin-bottom: 30px;
+      }
+
+      .chapter-section h3 {
+        font-size: 1.4rem;
+        color: #ff00aa;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(255, 0, 170, 0.3);
+      }
+
+      .section-content {
+        color: #d4e4f7;
+        line-height: 1.8;
+        font-size: 1.05rem;
+      }
+
+      .quiz-container {
+        max-width: 800px;
+        margin: 40px auto;
+      }
+
+      .quiz-question {
+        background: rgba(0, 245, 255, 0.1);
+        border: 2px solid #00f5ff;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+      }
+
+      .quiz-question-text {
+        font-size: 1.3rem;
+        color: #ffffff;
+        margin-bottom: 20px;
+      }
+
+      .quiz-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .quiz-option {
+        padding: 12px 20px;
+        border: 2px solid #b400ff;
+        background: rgba(180, 0, 255, 0.1);
+        color: #b400ff;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        text-align: left;
+      }
+
+      .quiz-option:hover {
+        background: rgba(180, 0, 255, 0.2);
+        box-shadow: 0 0 15px rgba(180, 0, 255, 0.4);
+      }
+
+      .quiz-option.selected {
+        background: rgba(180, 0, 255, 0.3);
+        box-shadow: 0 0 20px rgba(180, 0, 255, 0.6);
+      }
+
+      .quiz-option.correct {
+        border-color: #00ff88;
+        background: rgba(0, 255, 136, 0.2);
+        color: #00ff88;
+      }
+
+      .quiz-option.incorrect {
+        border-color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.2);
+        color: #ff6b6b;
+      }
+
+      #tutorialProgress {
+        text-align: center;
+        color: #00f5ff;
+        font-size: 1rem;
+        margin-top: 20px;
       }
 
       .tutorial-wrapper {
