@@ -460,6 +460,10 @@
           🎴 卡牌自學方案<br>
           <span style="font-size: 0.7em; opacity: 0.8;">隨機題目引導學習</span>
         </button>
+        <button class="mode-btn time-conversion" onclick="goToTimeConversionModule()" style="border-color: #ff00aa; background: rgba(255, 0, 170, 0.1);">
+          🕐 時間換算專項<br>
+          <span style="font-size: 0.7em; opacity: 0.8;">跨日計算 + 詳細教學</span>
+        </button>
       </div>
     </div>
 
@@ -586,6 +590,31 @@
     <!-- ===== 教學頁面 (新增) ===== -->
     <div id="tutorialPage" style="display:none;">
       <div id="tutorialContent"></div>
+    </div>
+
+    <!-- ===== 時間換算專項模塊 ===== -->
+    <div id="timeConversionPage" class="hidden" style="display: none;">
+      <div class="time-conversion-header">
+        <button onclick="backToTimeConversion()" class="btn-back">← 返回首頁</button>
+        <h1>🕐 時間換算專項</h1>
+        <p>掌握跨日計算的奧秘</p>
+      </div>
+
+      <!-- 教學部分 -->
+      <div id="timeConversionTutorial" class="time-conversion-tutorial">
+        <!-- 動態加載教學內容 -->
+      </div>
+
+      <!-- 題庫部分 -->
+      <div id="timeConversionQuizPage" class="time-conversion-quiz hidden" style="display: none;">
+        <div class="quiz-header">
+          <h2 id="quizTitle">基礎題庫</h2>
+          <div id="quizProgress" class="progress-section"></div>
+        </div>
+        <div id="quizProblemContainer" class="quiz-container">
+          <!-- 動態加載題目 -->
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1604,6 +1633,128 @@
 
       .game-option { padding: 15px 20px; font-size: 1rem; border: 2px solid #00f5ff; border-radius: 10px; background: rgba(10, 14, 39, 0.8); color: #ffffff; cursor: pointer; transition: all 0.3s ease; }
       .game-option:hover { background: rgba(0, 245, 255, 0.15); box-shadow: 0 0 15px rgba(0, 245, 255, 0.5); }
+
+      /* ===== 時間換算模塊 ===== */
+      .hidden { display: none !important; }
+
+      .time-conversion-header { text-align: center; margin-bottom: 40px; position: relative; }
+      .time-conversion-header h1 { font-size: 2.5rem; margin: 20px 0; }
+      .time-conversion-header p { color: #b8c5d6; font-size: 1.1rem; }
+      .time-conversion-header .btn-back { position: absolute; left: 0; top: 0; }
+
+      .time-conversion-tutorial { margin-bottom: 40px; }
+      .tutorial-tabs { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+      .tab-btn { padding: 12px 25px; border: 2px solid #00f5ff; border-radius: 25px; background: rgba(10, 14, 39, 0.8); color: #00f5ff; cursor: pointer; transition: all 0.3s; font-weight: bold; }
+      .tab-btn.active { background: rgba(0, 245, 255, 0.2); box-shadow: 0 0 20px rgba(0, 245, 255, 0.5); }
+      .tab-btn:hover { transform: translateY(-2px); box-shadow: 0 0 15px rgba(0, 245, 255, 0.4); }
+
+      .tutorial-content { background: rgba(10, 14, 39, 0.6); border: 1px solid rgba(0, 245, 255, 0.2); border-radius: 15px; padding: 30px; }
+      .tutorial-chapter { margin-bottom: 30px; }
+      .chapter-header { margin-bottom: 30px; text-align: center; }
+      .chapter-header h2 { font-size: 2rem; margin-bottom: 10px; }
+      .chapter-header p { color: #b8c5d6; margin-bottom: 10px; }
+      .chapter-info { display: flex; gap: 20px; justify-content: center; margin-top: 10px; }
+      .duration { color: #00ff88; font-weight: bold; }
+
+      .chapter-section { margin-bottom: 30px; }
+      .chapter-section h3 { font-size: 1.4rem; color: #ff00aa; margin-bottom: 15px; }
+      .section-content { color: #d4e4f7; line-height: 1.8; }
+
+      .concept-box { display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
+      .concept-item { display: flex; align-items: center; justify-content: center; gap: 15px; padding: 15px; background: rgba(0, 255, 136, 0.1); border-radius: 10px; }
+      .concept-value { font-size: 1.3rem; font-weight: bold; color: #00ff88; }
+      .concept-equals { color: #00f5ff; font-size: 1.2rem; }
+
+      .converter-box { margin: 20px 0; padding: 20px; background: rgba(0, 245, 255, 0.1); border-radius: 10px; }
+      .converter-box input { padding: 10px 15px; border: 2px solid #00f5ff; background: rgba(10, 14, 39, 0.8); color: #ffffff; border-radius: 8px; font-size: 1rem; width: 100%; max-width: 200px; }
+      .converter-box input:focus { outline: none; box-shadow: 0 0 15px rgba(0, 245, 255, 0.5); }
+      #conversionResult { font-size: 1.2rem; color: #00ff88; text-align: center; }
+
+      .formula-box { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+      .formula { padding: 12px 20px; background: rgba(0, 245, 255, 0.1); border-left: 4px solid #00f5ff; border-radius: 5px; font-weight: bold; color: #00f5ff; font-family: monospace; font-size: 1.1rem; }
+
+      .example-problem { background: rgba(0, 245, 255, 0.05); padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid rgba(0, 245, 255, 0.2); }
+      .problem-text { font-size: 1.2rem; color: #d4e4f7; margin-bottom: 20px; }
+      .step-solution { margin: 20px 0; }
+      .solution-step { padding: 15px; background: rgba(10, 14, 39, 0.6); margin-bottom: 15px; border-left: 4px solid #ff00aa; border-radius: 5px; }
+      .step-num { color: #ff00aa; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
+      .step-explain { color: #b4b4ff; margin-bottom: 8px; }
+      .step-work { color: #00ff88; font-family: monospace; font-size: 1rem; line-height: 1.6; }
+      .answer-box { padding: 15px; margin-top: 15px; border-radius: 8px; text-align: center; font-size: 1.2rem; }
+
+      .tips-box { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+      .tip { padding: 12px 18px; background: rgba(180, 0, 255, 0.1); border-left: 4px solid #b400ff; border-radius: 5px; color: #d4e4f7; }
+
+      .interactive-example { margin: 20px 0; text-align: center; }
+      .timeline-label { color: #00f5ff; font-weight: bold; margin-bottom: 10px; }
+      #timeline1, #timeline2 { max-width: 100%; height: auto; border-radius: 10px; }
+      #timeline1Result, #timeline2Result { color: #00ff88; font-size: 1.1rem; font-weight: bold; }
+
+      .practice-box { margin: 20px 0; padding: 20px; background: rgba(0, 245, 255, 0.08); border-radius: 10px; }
+      .practice-problem { font-size: 1.2rem; color: #d4e4f7; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid rgba(0, 245, 255, 0.2); }
+      .timeline-interactive { padding: 20px; background: rgba(10, 14, 39, 0.5); border-radius: 8px; margin: 15px 0; }
+      .practice-result { margin-top: 15px; padding: 15px; border-radius: 8px; font-weight: bold; }
+      .btn-check { padding: 12px 30px; background: linear-gradient(to right, #00f5ff, #00ff88); color: #0a0e27; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
+      .btn-check:hover { transform: translateY(-3px); box-shadow: 0 0 20px rgba(0, 245, 255, 0.6); }
+
+      .chapter-quiz { margin: 20px 0; }
+      .quiz-question { padding: 20px; background: rgba(10, 14, 39, 0.6); border: 1px solid rgba(0, 245, 255, 0.2); border-radius: 10px; margin-bottom: 20px; }
+      .quiz-number { color: #ff00aa; font-weight: bold; margin-bottom: 10px; }
+      .quiz-content { font-size: 1.2rem; color: #d4e4f7; margin-bottom: 15px; }
+      .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+      .quiz-option { padding: 12px 20px; border: 2px solid #00f5ff; background: rgba(10, 14, 39, 0.8); color: #00f5ff; border-radius: 8px; cursor: pointer; transition: all 0.3s; font-size: 1rem; }
+      .quiz-option:hover { background: rgba(0, 245, 255, 0.15); box-shadow: 0 0 15px rgba(0, 245, 255, 0.4); }
+      .quiz-option:disabled { opacity: 0.5; cursor: not-allowed; }
+      .quiz-result-0, .quiz-result-1, .quiz-result-2, .quiz-result-3, .quiz-result-4 { margin-top: 10px; font-weight: bold; }
+
+      .hint-box { padding: 15px; background: rgba(180, 0, 255, 0.15); border-left: 4px solid #b400ff; border-radius: 8px; color: #d4e4f7; text-align: left; }
+
+      .quiz-header { text-align: center; margin-bottom: 30px; }
+      .quiz-header h2 { font-size: 2rem; margin-bottom: 15px; }
+      .progress-section { margin-bottom: 20px; }
+      .progress-text { color: #00f5ff; font-weight: bold; margin-bottom: 10px; }
+      .progress-bar { width: 100%; height: 20px; background: rgba(0, 245, 255, 0.1); border-radius: 10px; overflow: hidden; border: 2px solid rgba(0, 245, 255, 0.3); }
+      .progress-fill { height: 100%; background: linear-gradient(to right, #00f5ff, #00ff88); transition: width 0.3s ease; }
+
+      .quiz-problem { padding: 30px; background: rgba(10, 14, 39, 0.6); border: 1px solid rgba(0, 245, 255, 0.2); border-radius: 15px; margin-bottom: 20px; }
+      .problem-header { text-align: center; margin-bottom: 30px; }
+      .problem-header h3 { font-size: 1.5rem; color: #00f5ff; margin-bottom: 10px; }
+      .step-indicator { color: #ff00aa; font-weight: bold; }
+
+      .problem-options, .step-options { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+      .option-btn, .step-option-btn { padding: 15px 20px; border: 2px solid #00f5ff; background: rgba(10, 14, 39, 0.8); color: #00f5ff; border-radius: 10px; cursor: pointer; transition: all 0.3s; font-size: 1rem; text-align: left; }
+      .option-btn:hover, .step-option-btn:hover { background: rgba(0, 245, 255, 0.15); transform: translateX(5px); box-shadow: 0 0 15px rgba(0, 245, 255, 0.4); }
+
+      .step-content { margin: 20px 0; }
+      .step-question { font-size: 1.2rem; color: #d4e4f7; margin-bottom: 15px; font-weight: bold; }
+      .step-input-area { display: flex; gap: 10px; margin: 20px 0; }
+      #stepAnswerInput { flex: 1; padding: 12px 15px; border: 2px solid #00f5ff; background: rgba(10, 14, 39, 0.8); color: #ffffff; border-radius: 8px; font-size: 1rem; }
+      #stepAnswerInput:focus { outline: none; box-shadow: 0 0 15px rgba(0, 245, 255, 0.5); }
+
+      .btn-submit { padding: 12px 30px; background: linear-gradient(to right, #00f5ff, #00ff88); color: #0a0e27; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+      .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(0, 255, 136, 0.6); }
+      .btn-hint { padding: 10px 20px; border: 2px solid #b400ff; background: rgba(180, 0, 255, 0.1); color: #b400ff; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+      .btn-hint:hover { background: rgba(180, 0, 255, 0.2); }
+
+      #answerFeedback, #stepFeedback { margin-top: 20px; }
+      .feedback-box { padding: 20px; border-radius: 10px; text-align: center; }
+      .feedback-icon { font-size: 3rem; margin-bottom: 10px; }
+      .feedback-text { font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; }
+      .feedback-explanation, .error-analysis { text-align: left; margin-top: 15px; padding: 15px; background: rgba(10, 14, 39, 0.8); border-radius: 8px; }
+
+      .correct-feedback { border: 2px solid #00ff88; background: rgba(0, 255, 136, 0.1); color: #00ff88; }
+      .wrong-feedback { border: 2px solid #ff6b6b; background: rgba(255, 107, 107, 0.1); color: #ff6b6b; }
+      .error-analysis { color: #d4e4f7; }
+      .btn-retry { padding: 12px 25px; background: #ff6b6b; border: none; border-radius: 8px; color: #ffffff; cursor: pointer; font-weight: bold; margin-top: 10px; transition: all 0.3s; }
+      .btn-retry:hover { background: #ff8989; transform: translateY(-2px); }
+
+      .quiz-complete { padding: 40px; text-align: center; background: rgba(0, 245, 255, 0.08); border-radius: 15px; border: 2px solid rgba(0, 245, 255, 0.3); }
+      .complete-header { font-size: 2.5rem; margin-bottom: 30px; }
+      .complete-stats { margin-bottom: 30px; }
+      .stat { padding: 20px; background: rgba(10, 14, 39, 0.6); border-radius: 10px; margin-bottom: 15px; }
+      .stat-label { color: #b8c5d6; margin-bottom: 10px; }
+      .stat-value { font-size: 1.8rem; color: #00ff88; font-weight: bold; }
+      .stat-percentage { color: #00f5ff; font-weight: bold; margin-top: 5px; }
     `;
     document.head.appendChild(style);
 
@@ -1611,6 +1762,37 @@
     window.addEventListener('beforeunload', () => {
       if (starAnimationRaf) {
         cancelAnimationFrame(starAnimationRaf);
+      }
+    });
+  </script>
+
+  <!-- 時間換算模塊 -->
+  <script src="time-conversion-data.js"></script>
+  <script src="time-conversion-module.js"></script>
+
+  <script>
+    // 時間換算模塊導航函數
+    function goToTimeConversionModule() {
+      document.getElementById('homePage').style.display = 'none';
+      document.getElementById('cardModePage').style.display = 'none';
+      document.getElementById('gameModePage').style.display = 'none';
+      document.getElementById('gamePlayPage').style.display = 'none';
+      document.getElementById('tutorialPage').style.display = 'none';
+      document.getElementById('timeConversionPage').style.display = 'block';
+
+      // 初始化時間換算模塊
+      initTimeConversionModule();
+    }
+
+    function backToTimeConversion() {
+      document.getElementById('timeConversionPage').style.display = 'none';
+      document.getElementById('homePage').style.display = 'flex';
+    }
+
+    // 添加返回首頁快捷鍵
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.getElementById('timeConversionPage').style.display === 'block') {
+        backToTimeConversion();
       }
     });
   </script>
