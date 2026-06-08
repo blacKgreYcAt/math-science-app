@@ -722,7 +722,8 @@
       u17_mixed_fraction_decimal: { title: "小數與分數的羈絆", questions: [] },
       u18_area_perimeter_adv: { title: "複合圖形大挑戰 (面積與周長)", questions: [] },
       u19_daily_math: { title: "生活素養：生活中的數學", questions: [] },
-      u20_brain_teasers: { title: "終極大魔王：邏輯推理解謎", questions: [] }
+      u20_brain_teasers: { title: "終極大魔王：邏輯推理解謎", questions: [] },
+      h_unit10: { title: "第10單元：日的換算（跨日計算）", questions: [] }
     };
 
     // ===== 頁面導航 =====
@@ -741,6 +742,12 @@
         loadFirstQuestion();
         populateUnitSelector();
         setupSwipeListenerOnce();
+      }).catch(err => {
+        console.error('Error entering card mode:', err);
+        alert('無法進入卡牌模式，請重試');
+        // Stay on home page
+        document.getElementById('homePage').style.display = 'flex';
+        document.getElementById('cardModePage').classList.remove('active');
       });
     }
 
@@ -1048,6 +1055,12 @@
         loadQuestions();
         populateGameUnitSelector();
         loadGameQuestions();
+      }).catch(err => {
+        console.error('Error starting game:', err);
+        alert('無法開始遊戲，請重試');
+        // Return to game mode selection
+        document.getElementById('gameModePage').classList.add('active');
+        document.getElementById('gamePlayPage').classList.remove('active');
       });
     }
 
@@ -1403,6 +1416,12 @@
         document.getElementById('tutorialPage').style.display = 'block';
 
         renderTutorialContent(unitData);
+      }).catch(err => {
+        console.error('Error loading tutorial:', err);
+        alert('無法加載教學內容，請重試');
+        // Return to game mode selection
+        document.getElementById('gameModePage').classList.add('active');
+        document.getElementById('gamePlayPage').classList.remove('active');
       });
     }
 
@@ -1467,6 +1486,13 @@
         // Questions are now already in questionDatabase from initMathDatabase
         loadGameQuestions();
         displayGameContent();
+      }).catch(err => {
+        console.error('Error starting game from unit:', err);
+        alert('無法開始遊戲，請重試');
+        // Return to tutorial page or game mode
+        document.getElementById('tutorialPage').style.display = 'none';
+        document.getElementById('gamePlayPage').classList.remove('active');
+        document.getElementById('gameModePage').classList.add('active');
       });
     }
 
