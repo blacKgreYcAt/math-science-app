@@ -11,47 +11,259 @@ const TIME_CONVERSION_TUTORIAL = {
     duration: '5-10分鐘',
     sections: [
       {
-        heading: '1️⃣ 基本單位關係',
+        heading: '1️⃣ 分層時間單位 - 點擊查看',
         content: `
-          <div class="concept-box">
-            <div class="concept-item">
-              <div class="concept-value">1 天</div>
-              <div class="concept-equals">=</div>
-              <div class="concept-value">24 小時</div>
+          <div class="time-conversion-basic-mobile">
+            <!-- 層級1：1天 = 24小時 -->
+            <div class="conversion-layer">
+              <div class="layer-header">
+                <div class="header-icon">🌅</div>
+                <div class="header-text">
+                  <div class="header-title">1 天 = 24 小時</div>
+                  <div class="header-hint">按下方的方塊查看</div>
+                </div>
+              </div>
+
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar-container">
+                  <div class="progress-segments">
+                    <button class="progress-segment" data-segment="1" onclick="highlightSegment(this, 1)">
+                      <span class="segment-label">0-6h</span>
+                    </button>
+                    <button class="progress-segment" data-segment="2" onclick="highlightSegment(this, 2)">
+                      <span class="segment-label">6-12h</span>
+                    </button>
+                    <button class="progress-segment" data-segment="3" onclick="highlightSegment(this, 3)">
+                      <span class="segment-label">12-18h</span>
+                    </button>
+                    <button class="progress-segment" data-segment="4" onclick="highlightSegment(this, 4)">
+                      <span class="segment-label">18-24h</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="segment-info" id="segmentInfo">
+                  <span id="segmentDisplay">點擊上方的方塊試試看</span>
+                </div>
+              </div>
             </div>
-            <div class="concept-item">
-              <div class="concept-value">1 小時</div>
-              <div class="concept-equals">=</div>
-              <div class="concept-value">60 分鐘</div>
+
+            <!-- 層級2：1小時 = 60分鐘 -->
+            <div class="conversion-layer">
+              <div class="layer-header">
+                <div class="header-icon">⏱️</div>
+                <div class="header-text">
+                  <div class="header-title">1 小時 = 60 分鐘</div>
+                  <div class="header-hint">按下方的方塊查看</div>
+                </div>
+              </div>
+
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar-container">
+                  <div class="progress-segments">
+                    <button class="progress-segment" data-segment="1" onclick="highlightMinutes(this, 1)">
+                      <span class="segment-label">0-20m</span>
+                    </button>
+                    <button class="progress-segment" data-segment="2" onclick="highlightMinutes(this, 2)">
+                      <span class="segment-label">20-40m</span>
+                    </button>
+                    <button class="progress-segment" data-segment="3" onclick="highlightMinutes(this, 3)">
+                      <span class="segment-label">40-60m</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="segment-info" id="minutesInfo">
+                  <span id="minutesDisplay">點擊上方的方塊試試看</span>
+                </div>
+              </div>
             </div>
-            <div class="concept-item">
-              <div class="concept-value">1 分鐘</div>
-              <div class="concept-equals">=</div>
-              <div class="concept-value">60 秒</div>
+
+            <!-- 層級3：1分鐘 = 60秒 -->
+            <div class="conversion-layer">
+              <div class="layer-header">
+                <div class="header-icon">⏰</div>
+                <div class="header-text">
+                  <div class="header-title">1 分鐘 = 60 秒</div>
+                  <div class="header-hint">按下方的方塊查看</div>
+                </div>
+              </div>
+
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar-container">
+                  <div class="progress-segments">
+                    <button class="progress-segment" data-segment="1" onclick="highlightSeconds(this, 1)">
+                      <span class="segment-label">0-15s</span>
+                    </button>
+                    <button class="progress-segment" data-segment="2" onclick="highlightSeconds(this, 2)">
+                      <span class="segment-label">15-30s</span>
+                    </button>
+                    <button class="progress-segment" data-segment="3" onclick="highlightSeconds(this, 3)">
+                      <span class="segment-label">30-45s</span>
+                    </button>
+                    <button class="progress-segment" data-segment="4" onclick="highlightSeconds(this, 4)">
+                      <span class="segment-label">45-60s</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="segment-info" id="secondsInfo">
+                  <span id="secondsDisplay">點擊上方的方塊試試看</span>
+                </div>
+              </div>
             </div>
           </div>
         `
       },
       {
-        heading: '2️⃣ 小練習：交互式換算器',
+        heading: '2️⃣ 互動轉換器 - 輸入數字看結果',
         content: `
-          <div class="converter-box">
-            <label>輸入天數：</label>
-            <input type="number" id="days" placeholder="例：2" min="0">
-            <div id="conversionResult" style="margin-top: 15px; padding: 10px; background: rgba(0,255,136,0.1); border-radius: 5px; display: none;">
-              <div id="resultText"></div>
+          <div class="interactive-converter-mobile">
+            <div class="converter-header">
+              <div class="converter-title">🎮 我來試試看</div>
+              <div class="converter-hint">輸入數字，看看會轉換成什麼！</div>
+            </div>
+
+            <div class="converter-cards">
+              <!-- 天 → 小時 -->
+              <div class="converter-card">
+                <div class="card-label">天 → 小時</div>
+
+                <div class="input-wrapper">
+                  <input
+                    type="number"
+                    class="converter-input"
+                    id="daysInput"
+                    placeholder="0"
+                    inputmode="numeric"
+                    min="0"
+                    max="100"
+                    value="2"
+                    oninput="updateDaysConversion(this.value)">
+                  <span class="input-unit">天</span>
+                </div>
+
+                <div class="arrow-icon">↓</div>
+
+                <div class="result-wrapper">
+                  <div class="result-value" id="hoursResult">48</div>
+                  <span class="result-unit">小時</span>
+                </div>
+              </div>
+
+              <!-- 小時 → 分鐘 -->
+              <div class="converter-card">
+                <div class="card-label">小時 → 分鐘</div>
+
+                <div class="input-wrapper">
+                  <input
+                    type="number"
+                    class="converter-input"
+                    id="hoursInput"
+                    placeholder="0"
+                    inputmode="numeric"
+                    min="0"
+                    max="100"
+                    value="3"
+                    oninput="updateHoursConversion(this.value)">
+                  <span class="input-unit">小時</span>
+                </div>
+
+                <div class="arrow-icon">↓</div>
+
+                <div class="result-wrapper">
+                  <div class="result-value" id="minutesResult">180</div>
+                  <span class="result-unit">分鐘</span>
+                </div>
+              </div>
+
+              <!-- 分鐘 → 秒 -->
+              <div class="converter-card">
+                <div class="card-label">分鐘 → 秒</div>
+
+                <div class="input-wrapper">
+                  <input
+                    type="number"
+                    class="converter-input"
+                    id="minutesInput"
+                    placeholder="0"
+                    inputmode="numeric"
+                    min="0"
+                    max="100"
+                    value="5"
+                    oninput="updateMinutesConversion(this.value)">
+                  <span class="input-unit">分鐘</span>
+                </div>
+
+                <div class="arrow-icon">↓</div>
+
+                <div class="result-wrapper">
+                  <div class="result-value" id="secondsResult">300</div>
+                  <span class="result-unit">秒</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 反向轉換選項 -->
+            <div class="reverse-mode-toggle">
+              <button class="toggle-btn" id="reverseToggleBtn" onclick="toggleReverseMode()">
+                <span class="toggle-icon">↔️</span>
+                <span class="toggle-text">想要反向轉換？</span>
+              </button>
             </div>
           </div>
         `
       },
       {
-        heading: '3️⃣ 記住這些轉換公式',
+        heading: '3️⃣ 轉換公式 - 向下和向上',
         content: `
-          <div class="formula-box">
-            <div class="formula">天數 × 24 = 小時</div>
-            <div class="formula">小時 × 60 = 分鐘</div>
-            <div class="formula">分鐘 × 60 = 秒</div>
-            <div class="formula" style="background: rgba(255,0,170,0.1); margin-top: 10px;">小時 ÷ 24 = 天（用於反推）</div>
+          <div class="formula-cards-mobile">
+            <!-- 向下轉換 -->
+            <div class="formula-card forward">
+              <div class="formula-direction">向下轉換 (× 倍數)</div>
+
+              <div class="formula-items">
+                <div class="formula-item">
+                  <span class="formula-from">天</span>
+                  <span class="formula-op">×24</span>
+                  <span class="formula-to">小時</span>
+                </div>
+
+                <div class="formula-item">
+                  <span class="formula-from">小時</span>
+                  <span class="formula-op">×60</span>
+                  <span class="formula-to">分鐘</span>
+                </div>
+
+                <div class="formula-item">
+                  <span class="formula-from">分鐘</span>
+                  <span class="formula-op">×60</span>
+                  <span class="formula-to">秒</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 向上轉換 -->
+            <div class="formula-card reverse">
+              <div class="formula-direction">向上轉換 (÷ 除數)</div>
+
+              <div class="formula-items">
+                <div class="formula-item">
+                  <span class="formula-from">小時</span>
+                  <span class="formula-op">÷24</span>
+                  <span class="formula-to">天</span>
+                </div>
+
+                <div class="formula-item">
+                  <span class="formula-from">分鐘</span>
+                  <span class="formula-op">÷60</span>
+                  <span class="formula-to">小時</span>
+                </div>
+
+                <div class="formula-item">
+                  <span class="formula-from">秒</span>
+                  <span class="formula-op">÷60</span>
+                  <span class="formula-to">分鐘</span>
+                </div>
+              </div>
+            </div>
           </div>
         `
       }
@@ -98,6 +310,31 @@ const TIME_CONVERSION_TUTORIAL = {
             </div>
             <div class="answer-box" style="background: rgba(0,255,136,0.15);">
               <strong>✓ 答案：周二下午9點</strong>
+            </div>
+          </div>
+        `
+      },
+      {
+        heading: '🎨 時間分解視覺化 - 30小時如何分解？',
+        content: `
+          <div class="time-decomposition">
+            <div class="decomposition-header">
+              <div class="decomposition-title">30小時 = ? 天 + ? 小時</div>
+              <div class="decomposition-buttons" style="display: flex; gap: 10px; margin-top: 12px;">
+                <button onclick="visualizeDecomposition(30)" class="decomposition-btn" style="background: rgba(0,245,255,0.15); border: 2px solid #00f5ff; color: #00f5ff; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">30小時</button>
+                <button onclick="visualizeDecomposition(36)" class="decomposition-btn" style="background: rgba(0,245,255,0.15); border: 2px solid #00f5ff; color: #00f5ff; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">36小時</button>
+                <button onclick="visualizeDecomposition(48)" class="decomposition-btn" style="background: rgba(0,245,255,0.15); border: 2px solid #00f5ff; color: #00f5ff; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">48小時</button>
+              </div>
+            </div>
+
+            <div id="decompositionVisualization" style="margin-top: 20px;">
+              <div class="decomposition-bar">
+                <div id="dayBar" class="decomposition-segment" style="background: linear-gradient(90deg, #00ff88 0%, #00ff88 100%); height: 40px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; color: #0a0e27; font-weight: bold;"></div>
+                <div id="hourBar" class="decomposition-segment" style="background: linear-gradient(90deg, #00f5ff 0%, #00f5ff 100%); height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #0a0e27; font-weight: bold;"></div>
+              </div>
+              <div class="decomposition-result" style="margin-top: 15px; padding: 15px; background: rgba(0,245,255,0.08); border: 2px solid #00f5ff; border-radius: 8px;">
+                <div id="decompositionText" style="text-align: center; color: #b8c5d6; font-size: 16px;"></div>
+              </div>
             </div>
           </div>
         `

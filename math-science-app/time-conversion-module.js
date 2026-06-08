@@ -871,3 +871,256 @@ function calculateTimeBeforeHours(endDay, endHour, hours) {
 
   return { day: startDay, hour: startHour };
 }
+
+// ============ 基礎概念交互函數 ============
+
+// 進度條互動 - 天/小時
+function highlightSegment(button, segment) {
+  const container = button.closest('.progress-segments');
+  const buttons = container.querySelectorAll('.progress-segment');
+
+  buttons.forEach(btn => btn.classList.remove('highlight'));
+  button.classList.add('highlight');
+
+  const hours = segment * 6;
+  const startHour = (segment - 1) * 6;
+  document.getElementById('segmentDisplay').textContent =
+    `✓ ${startHour}-${hours} 小時是一天中的 ${segment}/4`;
+}
+
+// 進度條互動 - 分鐘
+function highlightMinutes(button, segment) {
+  const container = button.closest('.progress-segments');
+  const buttons = container.querySelectorAll('.progress-segment');
+  buttons.forEach(btn => btn.classList.remove('highlight'));
+  button.classList.add('highlight');
+
+  const minutes = segment * 20;
+  const startMin = (segment - 1) * 20;
+  document.getElementById('minutesDisplay').textContent =
+    `✓ ${startMin}-${minutes} 分鐘是一小時中的 ${segment}/3`;
+}
+
+// 進度條互動 - 秒
+function highlightSeconds(button, segment) {
+  const container = button.closest('.progress-segments');
+  const buttons = container.querySelectorAll('.progress-segment');
+  buttons.forEach(btn => btn.classList.remove('highlight'));
+  button.classList.add('highlight');
+
+  const seconds = segment * 15;
+  const startSec = (segment - 1) * 15;
+  document.getElementById('secondsDisplay').textContent =
+    `✓ ${startSec}-${seconds} 秒是一分鐘中的 ${segment}/4`;
+}
+
+// 轉換器互動函數
+function updateDaysConversion(value) {
+  const days = parseInt(value) || 0;
+  document.getElementById('hoursResult').textContent = days * 24;
+}
+
+function updateHoursConversion(value) {
+  const hours = parseInt(value) || 0;
+  document.getElementById('minutesResult').textContent = hours * 60;
+}
+
+function updateMinutesConversion(value) {
+  const minutes = parseInt(value) || 0;
+  document.getElementById('secondsResult').textContent = minutes * 60;
+}
+
+// 反向轉換切換
+let reverseMode = false;
+
+function toggleReverseMode() {
+  reverseMode = !reverseMode;
+  const btn = document.getElementById('reverseToggleBtn');
+  const labels = document.querySelectorAll('.card-label');
+
+  if (reverseMode) {
+    btn.classList.add('active');
+    labels[0].textContent = '小時 ← 天';
+    labels[1].textContent = '分鐘 ← 小時';
+    labels[2].textContent = '秒 ← 分鐘';
+
+    document.getElementById('daysInput').placeholder = '輸入小時';
+    document.getElementById('hoursInput').placeholder = '輸入分鐘';
+    document.getElementById('minutesInput').placeholder = '輸入秒';
+  } else {
+    btn.classList.remove('active');
+    labels[0].textContent = '天 → 小時';
+    labels[1].textContent = '小時 → 分鐘';
+    labels[2].textContent = '分鐘 → 秒';
+
+    document.getElementById('daysInput').placeholder = '0';
+    document.getElementById('hoursInput').placeholder = '0';
+    document.getElementById('minutesInput').placeholder = '0';
+  }
+}
+
+// 初始化基礎概念
+function initializeBasicConcept() {
+  // 立即設置初始值
+  updateDaysConversion(2);
+  updateHoursConversion(3);
+  updateMinutesConversion(5);
+}
+
+// ============ 第二章：時間分解視覺化 ============
+/**
+ * 視覺化時間分解 - 將小時分解為天和小時
+ * @param {number} totalHours - 總小時數
+ */
+function visualizeDecomposition(totalHours) {
+  // 計算分解結果
+  const days = Math.floor(totalHours / 24);
+  const remainingHours = totalHours % 24;
+
+  // 計算條形寬度比例
+  const maxWidth = 100; // 百分比
+  const dayWidth = (days * 24 / totalHours) * maxWidth;
+  const hourWidth = (remainingHours / totalHours) * maxWidth;
+
+  // 更新條形圖
+  const dayBar = document.getElementById('dayBar');
+  const hourBar = document.getElementById('hourBar');
+  const decompositionText = document.getElementById('decompositionText');
+
+  if (!dayBar || !hourBar || !decompositionText) return;
+
+  // 設置條形寬度
+  if (days > 0) {
+    dayBar.style.width = dayWidth + '%';
+    dayBar.textContent = `${days}天 (${days * 24}小時)`;
+    dayBar.style.display = 'flex';
+  } else {
+    dayBar.style.display = 'none';
+  }
+
+  if (remainingHours > 0) {
+    hourBar.style.width = hourWidth + '%';
+    hourBar.textContent = `${remainingHours}小時`;
+    hourBar.style.display = 'flex';
+  } else {
+    hourBar.style.display = 'none';
+  }
+
+  // 更新結果文本
+  decompositionText.innerHTML = `
+    <div style="font-size: 18px; margin-bottom: 10px;">✓ ${totalHours}小時 = ${days}天 + ${remainingHours}小時</div>
+    <div style="font-size: 14px; color: #00f5ff;">
+      計算過程：${totalHours} ÷ 24 = ${days} ... ${remainingHours}
+    </div>
+  `;
+
+  // 添加動畫效果
+  dayBar.style.transition = 'all 0.5s ease';
+  hourBar.style.transition = 'all 0.5s ease';
+}
+
+// ============ 第二章：時間加法動畫 ============
+/**
+ * 顯示分步驟的時間加法動畫
+ * @param {string} startDay - 開始日期
+ * @param {number} startHour - 開始小時
+ * @param {number} totalHours - 總小時數
+ */
+function animateTimeAddition(startDay, startHour, totalHours) {
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+
+  // 第一步：計算分解
+  console.log(`${startDay} ${startHour}點 + ${totalHours}小時`);
+  console.log(`= ${startDay} ${startHour}點 + ${days}天 + ${hours}小時`);
+
+  // 第二步：先加小時
+  let intermediateHour = startHour + hours;
+  let currentDay = startDay;
+
+  if (intermediateHour >= 24) {
+    intermediateHour -= 24;
+    currentDay = getNextDay(currentDay);
+  }
+
+  console.log(`= ${currentDay} ${intermediateHour}點 + ${days}天`);
+
+  // 第三步：再加天數
+  let finalDay = currentDay;
+  for (let i = 0; i < days; i++) {
+    finalDay = getNextDay(finalDay);
+  }
+
+  console.log(`= ${finalDay} ${intermediateHour}點`);
+
+  return {
+    startDay,
+    startHour,
+    intermediateDay: currentDay,
+    intermediateHour,
+    finalDay,
+    finalHour: intermediateHour
+  };
+}
+
+/**
+ * 獲取下一天的日期
+ * @param {string} day - 當前日期（如 '周一'、'周二' 等）
+ * @returns {string} 下一天的日期
+ */
+function getNextDay(day) {
+  const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+  const currentIndex = days.indexOf(day);
+  if (currentIndex === -1) return day; // 如果沒找到，返回原值
+
+  const nextIndex = (currentIndex + 1) % 7;
+  return days[nextIndex];
+}
+
+/**
+ * 顯示時間加法的分步驟視覺化
+ * @param {string} containerId - 容器 ID
+ * @param {string} startDay - 開始日期
+ * @param {number} startHour - 開始小時
+ * @param {number} totalHours - 總小時數
+ */
+function displayTimeAdditionSteps(containerId, startDay, startHour, totalHours) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const result = animateTimeAddition(startDay, startHour, totalHours);
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+
+  container.innerHTML = `
+    <div class="time-addition-steps">
+      <div class="addition-step" style="padding: 15px; margin: 10px 0; background: rgba(0,245,255,0.08); border: 2px solid #00f5ff; border-radius: 8px;">
+        <div style="font-size: 14px; color: #b8c5d6; margin-bottom: 8px;">第1步：分解小時數</div>
+        <div style="font-size: 18px; font-weight: bold; color: #00f5ff;">
+          ${totalHours}小時 = ${days}天 + ${hours}小時
+        </div>
+      </div>
+
+      <div class="addition-step" style="padding: 15px; margin: 10px 0; background: rgba(0,255,136,0.08); border: 2px solid #00ff88; border-radius: 8px;">
+        <div style="font-size: 14px; color: #b8c5d6; margin-bottom: 8px;">第2步：先加小時</div>
+        <div style="font-size: 18px; font-weight: bold; color: #00ff88;">
+          ${startDay} ${startHour}點 + ${hours}小時 = ${result.intermediateDay} ${result.intermediateHour}點
+        </div>
+      </div>
+
+      <div class="addition-step" style="padding: 15px; margin: 10px 0; background: rgba(255,0,170,0.08); border: 2px solid #ff00aa; border-radius: 8px;">
+        <div style="font-size: 14px; color: #b8c5d6; margin-bottom: 8px;">第3步：再加天數</div>
+        <div style="font-size: 18px; font-weight: bold; color: #ff00aa;">
+          ${result.intermediateDay} ${result.intermediateHour}點 + ${days}天 = ${result.finalDay} ${result.finalHour}點
+        </div>
+      </div>
+
+      <div class="final-answer" style="padding: 15px; margin: 10px 0; background: rgba(0,255,136,0.15); border: 3px solid #00ff88; border-radius: 8px; text-align: center;">
+        <div style="font-size: 14px; color: #b8c5d6; margin-bottom: 8px;">✓ 最終答案</div>
+        <div style="font-size: 24px; font-weight: bold; color: #00ff88;">
+          ${result.finalDay} ${result.finalHour}點
+        </div>
+      </div>
+    </div>
+  `;
+}
