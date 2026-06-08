@@ -1401,8 +1401,30 @@
       Promise.resolve(mathDatabaseLoadPromise || initMathDatabase()).then(() => {
         const unitData = MATH_DATABASE[unitId];
         if (!unitData || !unitData.tutorial) {
-          console.warn('No tutorial found for', unitId, '- skipping to game');
-          startGameFromUnit(unitId);
+          console.warn('No tutorial found for', unitId, '- skipping directly to game');
+          // 直接進入遊戲，不顯示教學
+          selectedUnit = unitId;
+          gameUnit = unitId;
+          gameScore = 0;
+          gameIndex = 0;
+
+          // 隱藏所有頁面，顯示遊戲頁面
+          document.getElementById('homePage').style.display = 'none';
+          document.getElementById('gameModePage').classList.remove('active');
+          document.getElementById('gameModePage').style.display = 'none';
+          document.getElementById('cardModePage').classList.remove('active');
+          document.getElementById('cardModePage').style.display = 'none';
+          document.getElementById('tutorialPage').style.display = 'none';
+          document.getElementById('gamePlayPage').classList.add('active');
+          document.getElementById('gamePlayPage').style.display = 'block';
+
+          // 加載遊戲題目和標題
+          const unitTitle = questionDatabase[unitId]?.title || '遊戲';
+          document.getElementById('gameTitleHeader').textContent = `🎮 ${unitTitle}`;
+          document.getElementById('gameSubtitle').textContent = '完成所有題目來獲得勝利！';
+
+          loadGameQuestions();
+          displayGameContent();
           return;
         }
 
@@ -1411,8 +1433,11 @@
         // 隱藏其他頁面
         document.getElementById('homePage').style.display = 'none';
         document.getElementById('gameModePage').classList.remove('active');
+        document.getElementById('gameModePage').style.display = 'none';
         document.getElementById('gamePlayPage').classList.remove('active');
+        document.getElementById('gamePlayPage').style.display = 'none';
         document.getElementById('cardModePage').classList.remove('active');
+        document.getElementById('cardModePage').style.display = 'none';
         document.getElementById('tutorialPage').style.display = 'block';
 
         renderTutorialContent(unitData);
@@ -1422,6 +1447,7 @@
         // Return to game mode selection
         document.getElementById('gameModePage').classList.add('active');
         document.getElementById('gamePlayPage').classList.remove('active');
+        document.getElementById('gamePlayPage').style.display = 'none';
       });
     }
 
@@ -1469,18 +1495,32 @@
       // 【KEY FIX】: Ensure math database is loaded before initializing game
       Promise.resolve(mathDatabaseLoadPromise || initMathDatabase()).then(() => {
         selectedUnit = unitId;
+
+        // 隱藏所有其他頁面
+        document.getElementById('homePage').style.display = 'none';
+        document.getElementById('gameModePage').classList.remove('active');
+        document.getElementById('gameModePage').style.display = 'none';
+        document.getElementById('cardModePage').classList.remove('active');
+        document.getElementById('cardModePage').style.display = 'none';
         document.getElementById('tutorialPage').style.display = 'none';
+
+        // 顯示遊戲頁面
         document.getElementById('gamePlayPage').classList.add('active');
+        document.getElementById('gamePlayPage').style.display = 'block';
 
         gameScore = 0;
         gameIndex = 0;
         gameUnit = unitId;
 
+        // 設置標題
         const unitData = MATH_DATABASE[unitId];
+        const unitFromDB = questionDatabase[unitId];
         if (unitData) {
           document.getElementById('gameTitleHeader').textContent = `🎮 ${unitData.unit_title}`;
-          document.getElementById('gameSubtitle').textContent = '完成所有題目來獲得勝利！';
+        } else if (unitFromDB) {
+          document.getElementById('gameTitleHeader').textContent = `🎮 ${unitFromDB.title}`;
         }
+        document.getElementById('gameSubtitle').textContent = '完成所有題目來獲得勝利！';
 
         // Only call loadQuestions if needed for other purposes
         // Questions are now already in questionDatabase from initMathDatabase
@@ -1489,10 +1529,12 @@
       }).catch(err => {
         console.error('Error starting game from unit:', err);
         alert('無法開始遊戲，請重試');
-        // Return to tutorial page or game mode
+        // Return to game mode selection
         document.getElementById('tutorialPage').style.display = 'none';
         document.getElementById('gamePlayPage').classList.remove('active');
+        document.getElementById('gamePlayPage').style.display = 'none';
         document.getElementById('gameModePage').classList.add('active');
+        document.getElementById('gameModePage').style.display = 'block';
       });
     }
 
