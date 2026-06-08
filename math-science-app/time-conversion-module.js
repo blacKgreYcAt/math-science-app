@@ -41,9 +41,170 @@ class TimelineAnimator {
 
     this.padding = 40;
     this.hourWidth = (this.width - 2 * this.padding) / 24;
+
+    // 拖拽狀態
+    this.isDragging = false;
+    this.dragStartX = 0;
+    this.startDay = 3; // 周三
+    this.startHour = 15; // 下午3點
+    this.currentHour = 15;
+    this.elapsedHours = 0;
+
+    // 綁定事件監聽
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
+    this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
+    this.canvas.addEventListener('mouseup', (e) => this.onMouseUp(e));
+    this.canvas.addEventListener('mouseleave', (e) => this.onMouseLeave(e));
+
+    // 觸控支持
+    this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
+    this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e));
+    this.canvas.addEventListener('touchend', (e) => this.onTouchEnd(e));
+  }
+
+  onMouseDown(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // 檢查是否點擊在時間軸區域
+    if (y > 70 && y < 110) {
+      this.isDragging = true;
+      this.dragStartX = x;
+      this.canvas.style.cursor = 'grabbing';
+    }
+  }
+
+  onMouseMove(e) {
+    if (!this.isDragging) {
+      const rect = this.canvas.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      this.canvas.style.cursor = (y > 70 && y < 110) ? 'grab' : 'default';
+      return;
+    }
+
+    const rect = this.canvas.getBoundingClientRect();
+    const currentX = e.clientX - rect.left;
+    const deltaX = currentX - this.dragStartX;
+
+    // 計算小時偏移
+    const hourDelta = deltaX / this.hourWidth;
+    this.currentHour = this.startHour + hourDelta;
+
+    // 限制在有效範圍內
+    this.currentHour = Math.max(0, Math.min(this.currentHour, 60)); // 最多拖動到 +36 小時
+
+    // 計算經過的小時數
+    this.elapsedHours = this.currentHour - this.startHour;
+
+    // 重繪
+    this.drawTimelineWithDrag();
+    this.updateResultDisplay();
+  }
+
+  onMouseUp(e) {
+    this.isDragging = false;
+    this.canvas.style.cursor = 'default';
+  }
+
+  onMouseLeave(e) {
+    this.isDragging = false;
+    this.canvas.style.cursor = 'default';
+  }
+
+  onTouchStart(e) {
+    const touch = e.touches[0];
+    const rect = this.canvas.getBoundingClientRect();
+    const y = touch.clientY - rect.top;
+
+    if (y > 70 && y < 110) {
+      this.isDragging = true;
+      this.dragStartX = touch.clientX - rect.left;
+    }
+  }
+
+  onTouchMove(e) {
+    if (!this.isDragging) return;
+
+    const touch = e.touches[0];
+    const rect = this.canvas.getBoundingClientRect();
+    const currentX = touch.clientX - rect.left;
+    const deltaX = currentX - this.dragStartX;
+
+    const hourDelta = deltaX / this.hourWidth;
+    this.currentHour = this.startHour + hourDelta;
+    this.currentHour = Math.max(0, Math.min(this.currentHour, 60));
+
+    this.elapsedHours = this.currentHour - this.startHour;
+
+    this.drawTimelineWithDrag();
+    this.updateResultDisplay();
+
+    e.preventDefault();
+  }
+
+  onTouchEnd(e) {
+    this.isDragging = false;
+  }
+
+  drawTimelineWithDrag() {
+    // 清空canvas
+    this.ctx.fillStyle = this.colors.background;
+    this.ctx.fillRect(0, 0, this.width, this.height);
+
+    // 繪製背景網格
+    this.drawGrid();
+
+    // 繪製天數標籤
+    this.drawDayLabels(this.startDay, this.startDay + 2);
+
+    // 繪製小時刻度
+    this.drawHourMarks();
+
+    // 繪製當前時間範圍
+    this.drawTimeRange(this.startHour, this.currentHour);
+  }
+
+  updateResultDisplay() {
+    const resultDiv = document.getElementById('timeline1Result');
+    if (!resultDiv) return;
+
+    const days = Math.floor(this.elapsedHours / 24);
+    const hours = Math.floor(this.elapsedHours % 24);
+
+    let resultText = `⏱️ 已拖動：${this.elapsedHours.toFixed(1)}小時 `;
+
+    if (this.elapsedHours >= 24) {
+      resultText += `= ${days}天 ${hours}小時`;
+    }
+
+    // 計算結束時間
+    let endDay = '周三';
+    let endHour = this.currentHour;
+
+    const dayOffset = Math.floor(this.currentHour / 24);
+    if (dayOffset > 0) {
+      const dayNames = ['周三', '周四', '周五'];
+      endDay = dayNames[Math.min(dayOffset, dayNames.length - 1)];
+      endHour = this.currentHour % 24;
+    }
+
+    resultText += `<br>✓ 結果：${endDay} ${Math.floor(endHour)}點`;
+
+    resultDiv.innerHTML = resultText;
   }
 
   drawTimeline(startDay, startHour, endDay, endHour) {
+    // 保存初始狀態用於拖拽
+    this.startDay = startDay;
+    this.startHour = startHour;
+    this.currentHour = endHour;
+    this.elapsedHours = endHour - startHour;
+
     // 清空canvas
     this.ctx.fillStyle = this.colors.background;
     this.ctx.fillRect(0, 0, this.width, this.height);
@@ -322,11 +483,11 @@ function initTimelineInteractive1() {
     if (!canvas) return;
 
     const animator = new TimelineAnimator('timeline1');
-    animator.drawTimeline(3, 15, 4, 21); // 周三下午3點 → 周四下午9點
+    animator.drawTimeline(3, 8, 5, 8); // 周三早上8點 → 經過48小時後是周五早上8點
 
     const resultDiv = document.getElementById('timeline1Result');
     if (resultDiv) {
-      resultDiv.innerHTML = `✓ 答案：周四下午9點（48小時 = 2天）`;
+      resultDiv.innerHTML = `💡 提示：在時間軸上拖拽紅點，看看時間如何變化！<br>✓ 當前：周五 8點（經過48小時 = 2天）`;
     }
   }, 100);
 }
