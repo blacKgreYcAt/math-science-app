@@ -1124,3 +1124,118 @@ function displayTimeAdditionSteps(containerId, startDay, startHour, totalHours) 
     </div>
   `;
 }
+
+// ============ 第三章：反向時間分解視覺化 ============
+/**
+ * 視覺化反向時間分解 - 往回推多少小時
+ * @param {number} totalHours - 往回推的總小時數
+ */
+function visualizeReverseDecomposition(totalHours) {
+  // 計算分解結果
+  const days = Math.floor(totalHours / 24);
+  const remainingHours = totalHours % 24;
+
+  // 計算條形寬度比例
+  const maxWidth = 100; // 百分比
+  const dayWidth = (days * 24 / totalHours) * maxWidth;
+  const hourWidth = (remainingHours / totalHours) * maxWidth;
+
+  // 更新條形圖
+  const dayBar = document.getElementById('reverseDayBar');
+  const hourBar = document.getElementById('reverseHourBar');
+  const decompositionText = document.getElementById('reverseDecompositionText');
+  const stepsContainer = document.getElementById('reverseCalculationSteps');
+
+  if (!dayBar || !hourBar || !decompositionText) return;
+
+  // 設置條形寬度
+  if (days > 0) {
+    dayBar.style.width = dayWidth + '%';
+    dayBar.textContent = `⬅ ${days}天`;
+    dayBar.style.display = 'flex';
+  } else {
+    dayBar.style.display = 'none';
+  }
+
+  if (remainingHours > 0) {
+    hourBar.style.width = hourWidth + '%';
+    hourBar.textContent = `⬅ ${remainingHours}小時`;
+    hourBar.style.display = 'flex';
+  } else {
+    hourBar.style.display = 'none';
+  }
+
+  // 更新結果文本
+  decompositionText.innerHTML = `
+    <div style="font-size: 18px; margin-bottom: 10px;">✓ 往回推 ${totalHours}小時 = 往回推 ${days}天 + ${remainingHours}小時</div>
+    <div style="font-size: 14px; color: #ff00aa;">
+      計算過程：${totalHours} ÷ 24 = ${days} ... ${remainingHours}
+    </div>
+  `;
+
+  // 添加計算步驟
+  displayReverseTimeSubtractionSteps(stepsContainer, totalHours);
+
+  // 添加動畫效果
+  dayBar.style.transition = 'all 0.5s ease';
+  hourBar.style.transition = 'all 0.5s ease';
+}
+
+/**
+ * 獲取前一天的日期
+ * @param {string} day - 當前日期（如 '周一'、'周二' 等）
+ * @returns {string} 前一天的日期
+ */
+function getPreviousDay(day) {
+  const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+  const currentIndex = days.indexOf(day);
+  if (currentIndex === -1) return day; // 如果沒找到，返回原值
+
+  const prevIndex = (currentIndex - 1 + 7) % 7;
+  return days[prevIndex];
+}
+
+/**
+ * 顯示反向時間減法的分步驟視覺化
+ * @param {element} container - 容器元素
+ * @param {number} totalHours - 往回推的總小時數
+ */
+function displayReverseTimeSubtractionSteps(container, totalHours) {
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+
+  // 假設從「今天早上8點」往回推
+  const endDay = '今天';
+  const endHour = 8;
+
+  // 第一步：往回推小時
+  let intermediateHour = endHour - hours;
+  let currentDay = endDay;
+
+  if (intermediateHour < 0) {
+    intermediateHour += 24;
+    currentDay = getPreviousDay(endDay);
+  }
+
+  // 第二步：往回推天數
+  let startDay = currentDay;
+  for (let i = 0; i < days; i++) {
+    startDay = getPreviousDay(startDay);
+  }
+
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="reverse-subtraction-steps" style="margin-top: 15px;">
+      <div style="padding: 12px; margin: 8px 0; background: rgba(255,0,170,0.08); border-left: 4px solid #ff00aa; border-radius: 4px;">
+        <div style="font-size: 13px; color: #b8c5d6; margin-bottom: 6px;">📍 例子：從「今天早上8點」往回推 ${totalHours}小時</div>
+        <div style="font-size: 16px; font-weight: bold; color: #ff00aa;">
+          第1步：${endDay} ${endHour}點 - ${hours}小時 = ${currentDay} ${intermediateHour}點
+        </div>
+        <div style="font-size: 16px; font-weight: bold; color: #ff00aa; margin-top: 8px;">
+          第2步：${currentDay} ${intermediateHour}點 - ${days}天 = ${startDay} ${intermediateHour}點
+        </div>
+      </div>
+    </div>
+  `;
+}

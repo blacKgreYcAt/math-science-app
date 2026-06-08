@@ -418,6 +418,33 @@ const TIME_CONVERSION_TUTORIAL = {
         `
       },
       {
+        heading: '🔄 反向時間分解視覺化 - 往回推怎麼計算？',
+        content: `
+          <div class="time-decomposition-reverse">
+            <div class="decomposition-header">
+              <div class="decomposition-title">反推：30小時前是什麼時候？</div>
+              <div class="decomposition-buttons" style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+                <button onclick="visualizeReverseDecomposition(30)" class="decomposition-btn" style="background: rgba(255,0,170,0.15); border: 2px solid #ff00aa; color: #ff00aa; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">往回推30小時</button>
+                <button onclick="visualizeReverseDecomposition(36)" class="decomposition-btn" style="background: rgba(255,0,170,0.15); border: 2px solid #ff00aa; color: #ff00aa; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">往回推36小時</button>
+                <button onclick="visualizeReverseDecomposition(48)" class="decomposition-btn" style="background: rgba(255,0,170,0.15); border: 2px solid #ff00aa; color: #ff00aa; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">往回推48小時</button>
+              </div>
+            </div>
+
+            <div id="reverseDecompositionVisualization" style="margin-top: 20px;">
+              <div class="decomposition-bar">
+                <div id="reverseDayBar" class="decomposition-segment" style="background: linear-gradient(90deg, #ff00aa 0%, #ff00aa 100%); height: 40px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; color: #0a0e27; font-weight: bold;"></div>
+                <div id="reverseHourBar" class="decomposition-segment" style="background: linear-gradient(90deg, #ff0088 0%, #ff0088 100%); height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #0a0e27; font-weight: bold;"></div>
+              </div>
+              <div class="decomposition-result" style="margin-top: 15px; padding: 15px; background: rgba(255,0,170,0.08); border: 2px solid #ff00aa; border-radius: 8px;">
+                <div id="reverseDecompositionText" style="text-align: center; color: #b8c5d6; font-size: 16px;"></div>
+              </div>
+            </div>
+
+            <div id="reverseCalculationSteps" style="margin-top: 20px;"></div>
+          </div>
+        `
+      },
+      {
         heading: '💡 反推解題技巧',
         content: `
           <div class="tips-box">
