@@ -172,12 +172,20 @@ class TimelineAnimator {
 
 // ============ 教學章節管理 ============
 function initTimeConversionTutorial() {
+  console.log('initTimeConversionTutorial called');
+
   const container = document.getElementById('timeConversionTutorial');
-  if (!container) return;
+  if (!container) {
+    console.error('timeConversionTutorial container not found');
+    return;
+  }
+
+  console.log('Container found, checking for tabs...');
 
   // 創建導航按鈕
   const tabs = document.querySelector('.tutorial-tabs');
   if (!tabs) {
+    console.log('tutorial-tabs not found, creating...');
     const tabsHTML = `
       <div class="tutorial-tabs">
         <button class="tab-btn active" onclick="switchTutorialChapter(1)">📖 基礎概念</button>
@@ -188,10 +196,15 @@ function initTimeConversionTutorial() {
       </div>
     `;
     container.insertAdjacentHTML('afterbegin', tabsHTML);
+    console.log('tutorial-tabs created');
+  } else {
+    console.log('tutorial-tabs already exists');
   }
 
   // 加載第一章
+  console.log('Loading chapter 1...');
   switchTutorialChapter(1);
+  console.log('Chapter 1 loaded');
 }
 
 function switchTutorialChapter(chapterNum) {
@@ -205,15 +218,29 @@ function switchTutorialChapter(chapterNum) {
   const contentContainer = document.getElementById('tutorialContent');
   const progressDisplay = document.getElementById('tutorialProgress');
 
-  if (!contentContainer) return;
+  if (!contentContainer) {
+    console.error('tutorialContent container not found');
+    return;
+  }
 
   // 清空內容
   contentContainer.innerHTML = '';
 
+  // 檢查 TIME_CONVERSION_DATA 是否存在
+  if (typeof TIME_CONVERSION_DATA === 'undefined' || !TIME_CONVERSION_DATA.tutorial) {
+    console.error('TIME_CONVERSION_DATA not loaded properly', TIME_CONVERSION_DATA);
+    contentContainer.innerHTML = '<p style="color: #ff6b6b;">⚠️ 教學數據加載失敗，請刷新頁面</p>';
+    return;
+  }
+
   const chapterKey = `chapter${chapterNum}`;
   const chapter = TIME_CONVERSION_DATA.tutorial[chapterKey];
 
-  if (!chapter) return;
+  if (!chapter) {
+    console.error(`Chapter ${chapterNum} not found in tutorial data`);
+    contentContainer.innerHTML = `<p style="color: #ff6b6b;">⚠️ 第 ${chapterNum} 章數據未找到</p>`;
+    return;
+  }
 
   // 構建章節內容
   let html = `
@@ -812,7 +839,13 @@ function backToTimeConversionHome() {
 }
 
 function initTimeConversionModule() {
-  initTimeConversionTutorial();
+  console.log('initTimeConversionModule called');
+  try {
+    initTimeConversionTutorial();
+    console.log('initTimeConversionTutorial completed successfully');
+  } catch (error) {
+    console.error('Error in initTimeConversionTutorial:', error);
+  }
 }
 
 // ============ 輔助函數 ============
