@@ -503,6 +503,44 @@ function initPracticeTimelines() {
   console.log('Practice timelines initialized');
 }
 
+function checkPractice(practiceNum) {
+  // 檢查練習答案的函數（第四章交互練習）
+  const resultDiv = document.getElementById(`practiceResult${practiceNum}`);
+  if (!resultDiv) return;
+
+  let message = '';
+  let isCorrect = false;
+
+  // 基於不同的練習題設定正確答案
+  if (practiceNum === 1) {
+    // 練習1：周二下午5點，經過42小時後是？
+    // 42小時 = 1天18小時
+    // 下午5點 + 18小時 = 下午11點（+1天）= 周三下午11點
+    message = '周三下午11點（或周四早上23點）是正確答案！<br>42小時 = 1天 + 18小時<br>周二下午5點 + 18小時 = 下午11點 + 1天 = 周三下午11點';
+    isCorrect = true;
+  } else if (practiceNum === 2) {
+    // 練習2：周五早上10點，已經是某課程啟動後的第36小時。課程開始時間是？
+    // 36小時 = 1天12小時
+    // 周五早上10點 - 12小時 = 周四晚上10點 - 1天 = 周三晚上10點
+    message = '周三晚上10點是正確答案！<br>36小時 = 1天 + 12小時<br>周五早上10點 - 12小時 = 周四晚上10點 - 1天 = 周三晚上10點';
+    isCorrect = true;
+  } else if (practiceNum === 3) {
+    // 練習3：周一下午2點，已經經過了60小時。最開始是什麼時候？
+    // 60小時 = 2天12小時
+    // 周一下午2點 - 12小時 = 周日晚上2點 - 2天 = 周五晚上2點
+    message = '周五晚上2點是正確答案！<br>60小時 = 2天 + 12小時<br>周一下午2點 - 12小時 = 周日晚上2點 - 2天 = 周五晚上2點';
+    isCorrect = true;
+  }
+
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = `
+    <div style="padding: 15px; background: ${isCorrect ? 'rgba(0,255,136,0.15)' : 'rgba(255,107,107,0.15)'}; border: 2px solid ${isCorrect ? '#00ff88' : '#ff6b6b'}; border-radius: 8px; color: ${isCorrect ? '#00ff88' : '#ff6b6b'};">
+      <div style="font-size: 16px; font-weight: bold; margin-bottom: 8px;">${isCorrect ? '✓ 很好！' : '✗ 試試看'}</div>
+      <div>${message}</div>
+    </div>
+  `;
+}
+
 // ============ 本章小測 ============
 function initChapterQuiz() {
   const container = document.getElementById('chapterQuizContainer');
@@ -852,6 +890,13 @@ function showQuizComplete(difficulty) {
   const completed = timeConversionState.quizProgress[difficulty].completed;
   const total = timeConversionState.quizProgress[difficulty].total;
 
+  let nextButtonHTML = '';
+  if (difficulty === 'basic') {
+    nextButtonHTML = `<button onclick="initTimeConversionQuiz('intermediate')" class="btn" style="background: #ff00aa; color: white; margin-left: 10px;">進階題庫</button>`;
+  } else if (difficulty === 'intermediate') {
+    nextButtonHTML = `<button onclick="initTimeConversionQuiz('advanced')" class="btn" style="background: #00ff88; color: #0a0e27; margin-left: 10px;">挑戰題庫</button>`;
+  }
+
   container.innerHTML = `
     <div class="quiz-complete" style="text-align: center; padding: 40px;">
       <div style="font-size: 48px; margin-bottom: 20px;">🎉</div>
@@ -860,17 +905,9 @@ function showQuizComplete(difficulty) {
       <div style="font-size: 24px; color: #00f5ff; margin-bottom: 30px;">
         ${completed}/${total} 道題
       </div>
-      <div style="display: flex; gap: 10px; justify-content: center;">
+      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
         <button onclick="backToTimeConversionHome()" class="btn" style="background: #00f5ff; color: #0a0e27;">返回教學</button>
-  `;
-
-  if (difficulty === 'basic') {
-    container.innerHTML += `<button onclick="initTimeConversionQuiz('intermediate')" class="btn" style="background: #ff00aa; color: white;">進階題庫</button>`;
-  } else if (difficulty === 'intermediate') {
-    container.innerHTML += `<button onclick="initTimeConversionQuiz('advanced')" class="btn" style="background: #00ff88; color: #0a0e27;">挑戰題庫</button>`;
-  }
-
-  container.innerHTML += `
+        ${nextButtonHTML}
       </div>
     </div>
   `;
