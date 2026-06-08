@@ -593,7 +593,7 @@
     </div>
 
     <!-- ===== 時間換算專項模塊 ===== -->
-    <div id="timeConversionPage" class="card-mode-page">
+    <div id="timeConversionPage">
       <div class="card-header">
         <button onclick="backToTimeConversion()" class="btn btn-back">← 返回首頁</button>
         <h1>🕐 時間換算專項</h1>
@@ -2023,18 +2023,6 @@
 
   <script>
     // 時間換算模塊導航函數
-    function goToTimeConversionModule() {
-      document.getElementById('homePage').style.display = 'none';
-      document.getElementById('cardModePage').style.display = 'none';
-      document.getElementById('gameModePage').style.display = 'none';
-      document.getElementById('gamePlayPage').style.display = 'none';
-      document.getElementById('tutorialPage').style.display = 'none';
-      document.getElementById('timeConversionPage').style.display = 'block';
-
-      // 初始化時間換算模塊
-      initTimeConversionModule();
-    }
-
     function backToTimeConversion() {
       document.getElementById('timeConversionPage').style.display = 'none';
       document.getElementById('homePage').style.display = 'flex';
