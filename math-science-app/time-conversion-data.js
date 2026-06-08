@@ -477,39 +477,60 @@ const TIME_CONVERSION_TUTORIAL = {
       {
         heading: '練習1：正推計算',
         content: `
-          <div class="practice-box">
-            <div class="practice-problem">
-              周二下午5點，經過42小時後是？
+          <div class="practice-box" style="background: rgba(0,245,255,0.08); border: 2px solid #00f5ff; border-radius: 10px; padding: 20px;">
+            <div class="practice-problem" style="font-size: 16px; font-weight: bold; margin-bottom: 15px; color: #00f5ff;">
+              📍 周二下午5點，經過42小時後是周幾幾點？
             </div>
-            <div id="practiceTimeline1" class="timeline-interactive"></div>
-            <div id="practiceResult1" class="practice-result" style="display:none;"></div>
-            <button onclick="checkPractice(1)" class="btn-check">檢查答案</button>
+            <div style="background: rgba(0,245,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+              <div style="color: #b8c5d6; margin-bottom: 10px;">💡 提示：42小時 = 1天 + 18小時</div>
+              <div style="color: #b8c5d6;">請推算：下午5點 + 18小時 + 1天 = ?</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #00f5ff;">
+              <div style="color: #b8c5d6; margin-bottom: 8px;">輸入答案：</div>
+              <input type="text" id="practice1Answer" placeholder="例如：周三下午11點" style="width: 100%; padding: 10px; background: rgba(0,245,255,0.1); border: 1px solid #00f5ff; border-radius: 6px; color: #00f5ff; font-size: 14px;">
+            </div>
+            <div id="practiceResult1" class="practice-result" style="display:none; margin-bottom: 15px;"></div>
+            <button onclick="checkPractice(1)" class="btn-check" style="background: #00f5ff; color: #0a0e27; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%;">提交答案 ✓</button>
           </div>
         `
       },
       {
         heading: '練習2：反推計算',
         content: `
-          <div class="practice-box">
-            <div class="practice-problem">
-              周五早上10點，已經是某課程啟動後的第36小時。課程開始時間是？
+          <div class="practice-box" style="background: rgba(255,0,170,0.08); border: 2px solid #ff00aa; border-radius: 10px; padding: 20px;">
+            <div class="practice-problem" style="font-size: 16px; font-weight: bold; margin-bottom: 15px; color: #ff00aa;">
+              📍 周五早上10點，已經是某課程啟動後的第36小時。課程開始時間是？
             </div>
-            <div id="practiceTimeline2" class="timeline-interactive"></div>
-            <div id="practiceResult2" class="practice-result" style="display:none;"></div>
-            <button onclick="checkPractice(2)" class="btn-check">檢查答案</button>
+            <div style="background: rgba(255,0,170,0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+              <div style="color: #b8c5d6; margin-bottom: 10px;">💡 提示：36小時 = 1天 + 12小時</div>
+              <div style="color: #b8c5d6;">請反推：周五早上10點 - 12小時 - 1天 = ?</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ff00aa;">
+              <div style="color: #b8c5d6; margin-bottom: 8px;">輸入答案：</div>
+              <input type="text" id="practice2Answer" placeholder="例如：周三晚上10點" style="width: 100%; padding: 10px; background: rgba(255,0,170,0.1); border: 1px solid #ff00aa; border-radius: 6px; color: #ff00aa; font-size: 14px;">
+            </div>
+            <div id="practiceResult2" class="practice-result" style="display:none; margin-bottom: 15px;"></div>
+            <button onclick="checkPractice(2)" class="btn-check" style="background: #ff00aa; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%;">提交答案 ✓</button>
           </div>
         `
       },
       {
         heading: '練習3：挑戰題',
         content: `
-          <div class="practice-box">
-            <div class="practice-problem">
-              周一下午2點，已經經過了60小時。最開始是什麼時候？
+          <div class="practice-box" style="background: rgba(0,255,136,0.08); border: 2px solid #00ff88; border-radius: 10px; padding: 20px;">
+            <div class="practice-problem" style="font-size: 16px; font-weight: bold; margin-bottom: 15px; color: #00ff88;">
+              📍 周一下午2點，已經經過了60小時。最開始是什麼時候？
             </div>
-            <div id="practiceTimeline3" class="timeline-interactive"></div>
-            <div id="practiceResult3" class="practice-result" style="display:none;"></div>
-            <button onclick="checkPractice(3)" class="btn-check">檢查答案</button>
+            <div style="background: rgba(0,255,136,0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+              <div style="color: #b8c5d6; margin-bottom: 10px;">💡 提示：60小時 = 2天 + 12小時</div>
+              <div style="color: #b8c5d6;">請反推：周一下午2點 - 12小時 - 2天 = ?</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #00ff88;">
+              <div style="color: #b8c5d6; margin-bottom: 8px;">輸入答案：</div>
+              <input type="text" id="practice3Answer" placeholder="例如：周五下午2點" style="width: 100%; padding: 10px; background: rgba(0,255,136,0.1); border: 1px solid #00ff88; border-radius: 6px; color: #00ff88; font-size: 14px;">
+            </div>
+            <div id="practiceResult3" class="practice-result" style="display:none; margin-bottom: 15px;"></div>
+            <button onclick="checkPractice(3)" class="btn-check" style="background: #00ff88; color: #0a0e27; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%;">提交答案 ✓</button>
           </div>
         `
       }

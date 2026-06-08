@@ -505,40 +505,58 @@ function initPracticeTimelines() {
 
 function checkPractice(practiceNum) {
   // 檢查練習答案的函數（第四章交互練習）
+  const answerInput = document.getElementById(`practice${practiceNum}Answer`);
   const resultDiv = document.getElementById(`practiceResult${practiceNum}`);
-  if (!resultDiv) return;
 
+  if (!answerInput || !resultDiv) return;
+
+  const userAnswer = answerInput.value.trim();
   let message = '';
   let isCorrect = false;
+  let correctAnswers = [];
 
   // 基於不同的練習題設定正確答案
   if (practiceNum === 1) {
     // 練習1：周二下午5點，經過42小時後是？
     // 42小時 = 1天18小時
     // 下午5點 + 18小時 = 下午11點（+1天）= 周三下午11點
-    message = '周三下午11點（或周四早上23點）是正確答案！<br>42小時 = 1天 + 18小時<br>周二下午5點 + 18小時 = 下午11點 + 1天 = 周三下午11點';
-    isCorrect = true;
+    correctAnswers = ['周三下午11點', '周三晚上11點', '周三23點', '周三11點', '周三 下午11點'];
+    message = '<strong style="color: #00ff88;">✓ 正確！</strong><br><br>解答過程：<br>• 42小時 = 1天 + 18小時<br>• 周二下午5點 + 18小時 = 下午5點 + 18小時 = 下午11點（23點）<br>• 下午11點再加1天 = 周三下午11點';
   } else if (practiceNum === 2) {
     // 練習2：周五早上10點，已經是某課程啟動後的第36小時。課程開始時間是？
     // 36小時 = 1天12小時
     // 周五早上10點 - 12小時 = 周四晚上10點 - 1天 = 周三晚上10點
-    message = '周三晚上10點是正確答案！<br>36小時 = 1天 + 12小時<br>周五早上10點 - 12小時 = 周四晚上10點 - 1天 = 周三晚上10點';
-    isCorrect = true;
+    correctAnswers = ['周三晚上10點', '周三下午10點', '周三10點', '周三 晚上10點', '周三 10點'];
+    message = '<strong style="color: #00ff88;">✓ 正確！</strong><br><br>解答過程：<br>• 36小時 = 1天 + 12小時<br>• 周五早上10點 - 12小時 = 周四晚上10點（前一天22點）<br>• 周四晚上10點再減1天 = 周三晚上10點';
   } else if (practiceNum === 3) {
     // 練習3：周一下午2點，已經經過了60小時。最開始是什麼時候？
     // 60小時 = 2天12小時
     // 周一下午2點 - 12小時 = 周日晚上2點 - 2天 = 周五晚上2點
-    message = '周五晚上2點是正確答案！<br>60小時 = 2天 + 12小時<br>周一下午2點 - 12小時 = 周日晚上2點 - 2天 = 周五晚上2點';
-    isCorrect = true;
+    correctAnswers = ['周五下午2點', '周五晚上2點', '周五2點', '周五 下午2點', '周五 晚上2點'];
+    message = '<strong style="color: #00ff88;">✓ 正確！</strong><br><br>解答過程：<br>• 60小時 = 2天 + 12小時<br>• 周一下午2點 - 12小時 = 周日下午2點<br>• 周日下午2點再減2天 = 周五下午2點';
   }
+
+  // 檢查答案（支持多個正確答案）
+  isCorrect = correctAnswers.some(answer => answer.includes(userAnswer) || userAnswer.includes(answer.split(/[點小時\s]/)[0]));
 
   resultDiv.style.display = 'block';
   resultDiv.innerHTML = `
-    <div style="padding: 15px; background: ${isCorrect ? 'rgba(0,255,136,0.15)' : 'rgba(255,107,107,0.15)'}; border: 2px solid ${isCorrect ? '#00ff88' : '#ff6b6b'}; border-radius: 8px; color: ${isCorrect ? '#00ff88' : '#ff6b6b'};">
-      <div style="font-size: 16px; font-weight: bold; margin-bottom: 8px;">${isCorrect ? '✓ 很好！' : '✗ 試試看'}</div>
-      <div>${message}</div>
+    <div style="padding: 15px; background: ${isCorrect ? 'rgba(0,255,136,0.15)' : 'rgba(255,107,107,0.15)'}; border: 2px solid ${isCorrect ? '#00ff88' : '#ff6b6b'}; border-radius: 8px;">
+      <div style="color: ${isCorrect ? '#00ff88' : '#ff6b6b'};">
+        ${isCorrect ? message : `<strong>❌ 答案不對</strong><br><br>${message.replace('<strong style="color: #00ff88;">✓ 正確！</strong><br><br>', '').replace('<strong>', '<strong style="color: #ff6b6b;">')}`}
+      </div>
     </div>
   `;
+
+  // 清空輸入框提示
+  if (!isCorrect) {
+    answerInput.style.borderColor = '#ff6b6b';
+    setTimeout(() => {
+      answerInput.style.borderColor = '';
+    }, 1500);
+  } else {
+    answerInput.style.borderColor = '#00ff88';
+  }
 }
 
 // ============ 本章小測 ============
