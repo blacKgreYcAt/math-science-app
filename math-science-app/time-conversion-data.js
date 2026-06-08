@@ -525,6 +525,28 @@ const TIME_CONVERSION_TUTORIAL = {
       {
         heading: '開始小測',
         content: `<div id="chapterQuizContainer" style="padding: 20px; background: rgba(0,245,255,0.05); border-radius: 10px;"></div>`
+      },
+      {
+        heading: '🎓 進入正式題庫',
+        content: `
+          <div class="quiz-selection" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 20px;">
+            <button onclick="initTimeConversionQuiz('basic')" class="quiz-btn" style="background: rgba(0,245,255,0.15); border: 2px solid #00f5ff; padding: 20px; border-radius: 10px; color: #00f5ff; font-weight: bold; cursor: pointer;">
+              <div style="font-size: 24px; margin-bottom: 10px;">⭐</div>
+              <div style="font-size: 16px; margin-bottom: 5px;">基礎題庫</div>
+              <div style="font-size: 12px; color: #b8c5d6;">15道題 • 簡單</div>
+            </button>
+            <button onclick="initTimeConversionQuiz('intermediate')" class="quiz-btn" style="background: rgba(255,0,170,0.15); border: 2px solid #ff00aa; padding: 20px; border-radius: 10px; color: #ff00aa; font-weight: bold; cursor: pointer;">
+              <div style="font-size: 24px; margin-bottom: 10px;">⭐⭐</div>
+              <div style="font-size: 16px; margin-bottom: 5px;">進階題庫</div>
+              <div style="font-size: 12px; color: #b8c5d6;">20道題 • 中等</div>
+            </button>
+            <button onclick="initTimeConversionQuiz('advanced')" class="quiz-btn" style="background: rgba(0,255,136,0.15); border: 2px solid #00ff88; padding: 20px; border-radius: 10px; color: #00ff88; font-weight: bold; cursor: pointer;">
+              <div style="font-size: 24px; margin-bottom: 10px;">⭐⭐⭐</div>
+              <div style="font-size: 16px; margin-bottom: 5px;">挑戰題庫</div>
+              <div style="font-size: 12px; color: #b8c5d6;">15道題 • 困難</div>
+            </button>
+          </div>
+        `
       }
     ]
   }

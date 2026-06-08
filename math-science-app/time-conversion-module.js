@@ -735,6 +735,163 @@ function submitMultipleChoiceAnswer(selectedAnswer) {
   const feedbackDiv = document.getElementById('answerFeedback');
 
   if (selectedAnswer === problem.answer) {
+    feedbackDiv.innerHTML = `
+      <div style="color: #00ff88; padding: 15px; background: rgba(0,255,136,0.15); border-radius: 8px; margin-top: 15px;">
+        <div style="font-size: 18px; margin-bottom: 8px;">✓ 正確！</div>
+        <div>${problem.explanation}</div>
+        <button onclick="moveToNextProblem()" class="btn-next" style="margin-top: 12px; display: inline-block;">下一題 →</button>
+      </div>
+    `;
+    timeConversionState.quizProgress[difficulty].completed++;
+  } else {
+    feedbackDiv.innerHTML = `
+      <div style="color: #ff6b6b; padding: 15px; background: rgba(255,107,107,0.15); border-radius: 8px; margin-top: 15px;">
+        <div style="font-size: 18px; margin-bottom: 8px;">✗ 不對</div>
+        <div>正確答案：<strong>${problem.answer}</strong></div>
+        <div style="margin-top: 8px;">${problem.explanation}</div>
+      </div>
+    `;
+  }
+
+  // 禁用所有按鈕
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.disabled = true;
+  });
+}
+
+function submitStepAnswer(selectedAnswer) {
+  const difficulty = timeConversionState.currentDifficulty;
+  let problemSet = [];
+
+  if (difficulty === 'basic') {
+    problemSet = TIME_CONVERSION_DATA.basicProblems;
+  } else if (difficulty === 'intermediate') {
+    problemSet = TIME_CONVERSION_DATA.intermediateProblems;
+  } else if (difficulty === 'advanced') {
+    problemSet = TIME_CONVERSION_DATA.advancedProblems;
+  }
+
+  const problem = problemSet[timeConversionState.currentProblemIndex];
+  const currentStep = timeConversionState.currentStep;
+  const step = problem.questions[currentStep];
+  const feedbackDiv = document.getElementById('stepFeedback');
+
+  if (selectedAnswer === step.answer) {
+    feedbackDiv.innerHTML = `
+      <div style="color: #00ff88; padding: 15px; background: rgba(0,255,136,0.15); border-radius: 8px; margin-top: 15px;">
+        <div style="font-size: 16px; margin-bottom: 8px;">✓ 正確！</div>
+        <button onclick="nextStep()" class="btn-next" style="margin-top: 12px;">下一步 →</button>
+      </div>
+    `;
+  } else {
+    feedbackDiv.innerHTML = `
+      <div style="color: #ff6b6b; padding: 15px; background: rgba(255,107,107,0.15); border-radius: 8px; margin-top: 15px;">
+        <div style="font-size: 16px; margin-bottom: 8px;">✗ 不對</div>
+        <div>正確答案：<strong>${step.answer}</strong></div>
+      </div>
+    `;
+  }
+
+  // 禁用所有按鈕
+  document.querySelectorAll('.step-option-btn').forEach(btn => {
+    btn.disabled = true;
+  });
+}
+
+function nextStep() {
+  timeConversionState.currentStep++;
+  displayCurrentProblem();
+}
+
+function moveToNextProblem() {
+  timeConversionState.currentProblemIndex++;
+  timeConversionState.currentStep = 0;
+  displayCurrentProblem();
+}
+
+function showHint() {
+  const difficulty = timeConversionState.currentDifficulty;
+  let problemSet = [];
+
+  if (difficulty === 'basic') {
+    problemSet = TIME_CONVERSION_DATA.basicProblems;
+  } else if (difficulty === 'intermediate') {
+    problemSet = TIME_CONVERSION_DATA.intermediateProblems;
+  } else if (difficulty === 'advanced') {
+    problemSet = TIME_CONVERSION_DATA.advancedProblems;
+  }
+
+  const problem = problemSet[timeConversionState.currentProblemIndex];
+  const step = problem.questions[timeConversionState.currentStep];
+
+  if (step.hint) {
+    const feedbackDiv = document.getElementById('stepFeedback');
+    feedbackDiv.innerHTML = `
+      <div style="color: #ffc107; padding: 12px; background: rgba(255,193,7,0.15); border-radius: 8px; margin-top: 12px;">
+        <strong>💡 提示：</strong> ${step.hint}
+      </div>
+    `;
+  }
+}
+
+function updateProgressBar(difficulty) {
+  const completed = timeConversionState.quizProgress[difficulty].completed;
+  const total = timeConversionState.quizProgress[difficulty].total;
+  const percentage = (completed / total) * 100;
+
+  document.getElementById('quizProgress').style.width = percentage + '%';
+  document.getElementById('quizCurrentIndex').textContent = timeConversionState.currentProblemIndex + 1;
+  document.getElementById('quizTotal').textContent = total;
+  document.getElementById('quizTitle').textContent =
+    difficulty === 'basic' ? '基礎題庫' :
+    difficulty === 'intermediate' ? '進階題庫' : '挑戰題庫';
+}
+
+function showQuizComplete(difficulty) {
+  const container = document.getElementById('quizProblemContainer');
+  const completed = timeConversionState.quizProgress[difficulty].completed;
+  const total = timeConversionState.quizProgress[difficulty].total;
+
+  container.innerHTML = `
+    <div class="quiz-complete" style="text-align: center; padding: 40px;">
+      <div style="font-size: 48px; margin-bottom: 20px;">🎉</div>
+      <h2 style="color: #00ff88; margin-bottom: 10px;">太棒了！</h2>
+      <p style="color: #b8c5d6; margin-bottom: 20px;">你已完成此難度的所有題目</p>
+      <div style="font-size: 24px; color: #00f5ff; margin-bottom: 30px;">
+        ${completed}/${total} 道題
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button onclick="backToTimeConversionHome()" class="btn" style="background: #00f5ff; color: #0a0e27;">返回教學</button>
+  `;
+
+  if (difficulty === 'basic') {
+    container.innerHTML += `<button onclick="initTimeConversionQuiz('intermediate')" class="btn" style="background: #ff00aa; color: white;">進階題庫</button>`;
+  } else if (difficulty === 'intermediate') {
+    container.innerHTML += `<button onclick="initTimeConversionQuiz('advanced')" class="btn" style="background: #00ff88; color: #0a0e27;">挑戰題庫</button>`;
+  }
+
+  container.innerHTML += `
+      </div>
+    </div>
+  `;
+}
+
+function submitMultipleChoiceAnswer(selectedAnswer) {
+  const difficulty = timeConversionState.currentDifficulty;
+  let problemSet = [];
+
+  if (difficulty === 'basic') {
+    problemSet = TIME_CONVERSION_DATA.basicProblems;
+  } else if (difficulty === 'intermediate') {
+    problemSet = TIME_CONVERSION_DATA.intermediateProblems;
+  } else if (difficulty === 'advanced') {
+    problemSet = TIME_CONVERSION_DATA.advancedProblems;
+  }
+
+  const problem = problemSet[timeConversionState.currentProblemIndex];
+  const feedbackDiv = document.getElementById('answerFeedback');
+
+  if (selectedAnswer === problem.answer) {
     showCorrectFeedback(problem, feedbackDiv);
     timeConversionState.quizProgress[difficulty].completed++;
 
