@@ -215,11 +215,11 @@ function switchTutorialChapter(chapterNum) {
     btn.classList.toggle('active', idx + 1 === chapterNum);
   });
 
-  const contentContainer = document.getElementById('tutorialContent');
+  const contentContainer = document.getElementById('timeConversionTutorialContent');
   const progressDisplay = document.getElementById('tutorialProgress');
 
   if (!contentContainer) {
-    console.error('tutorialContent container not found');
+    console.error('timeConversionTutorialContent container not found');
     return;
   }
 
