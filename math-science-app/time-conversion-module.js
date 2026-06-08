@@ -515,40 +515,71 @@ function checkPractice(practiceNum) {
   let isCorrect = false;
   let correctAnswers = [];
 
-  // 基於不同的練習題設定正確答案
-  if (practiceNum === 1) {
-    // 練習1：周二下午5點，經過42小時後是？
-    // 42小時 = 1天18小時
-    // 下午5點 + 18小時 = 下午11點（+1天）= 周三下午11點
-    correctAnswers = ['周三下午11點', '周三晚上11點', '周三23點', '周三11點', '周三 下午11點'];
-    message = '<strong style="color: #00ff88;">✓ 正確！</strong><br><br>解答過程：<br>• 42小時 = 1天 + 18小時<br>• 周二下午5點 + 18小時 = 下午5點 + 18小時 = 下午11點（23點）<br>• 下午11點再加1天 = 周三下午11點';
-  } else if (practiceNum === 2) {
-    // 練習2：周五早上10點，已經是某課程啟動後的第36小時。課程開始時間是？
-    // 36小時 = 1天12小時
-    // 周五早上10點 - 12小時 = 周四晚上10點 - 1天 = 周三晚上10點
-    correctAnswers = ['周三晚上10點', '周三下午10點', '周三10點', '周三 晚上10點', '周三 10點'];
-    message = '<strong style="color: #00ff88;">✓ 正確！</strong><br><br>解答過程：<br>• 36小時 = 1天 + 12小時<br>• 周五早上10點 - 12小時 = 周四晚上10點（前一天22點）<br>• 周四晚上10點再減1天 = 周三晚上10點';
-  } else if (practiceNum === 3) {
-    // 練習3：周一下午2點，已經經過了60小時。最開始是什麼時候？
-    // 60小時 = 2天12小時
-    // 周一下午2點 - 12小時 = 周日晚上2點 - 2天 = 周五晚上2點
-    correctAnswers = ['周五下午2點', '周五晚上2點', '周五2點', '周五 下午2點', '周五 晚上2點'];
-    message = '<strong style="color: #00ff88;">✓ 正確！</strong><br><br>解答過程：<br>• 60小時 = 2天 + 12小時<br>• 周一下午2點 - 12小時 = 周日下午2點<br>• 周日下午2點再減2天 = 周五下午2點';
+  // 10個練習題的答案設定
+  const practiceData = {
+    1: {
+      answers: ['周三下午11點', '周三晚上11點', '周三23點', '周三11點', '周三 下午11點'],
+      explanation: '42小時 = 1天 + 18小時<br>周二下午5點(17點) + 18小時 = 下午11點(23點)<br>+ 1天 = 周三下午11點'
+    },
+    2: {
+      answers: ['周三晚上10點', '周三下午10點', '周三10點', '周三 晚上10點', '周三22點'],
+      explanation: '36小時 = 1天 + 12小時<br>周五早上10點 - 12小時 = 周四晚上10點(22點)<br>- 1天 = 周三晚上10點'
+    },
+    3: {
+      answers: ['周五下午2點', '周五晚上2點', '周五2點', '周五 下午2點', '周五14點'],
+      explanation: '60小時 = 2天 + 12小時<br>周一下午2點(14點) - 12小時 = 周日下午2點<br>- 2天 = 周五下午2點'
+    },
+    4: {
+      answers: ['周四下午2點', '周四14點', '周四2點', '周四 下午2點'],
+      explanation: '30小時 = 1天 + 6小時<br>周三早上8點 + 6小時 = 周三下午2點(14點)<br>+ 1天 = 周四下午2點'
+    },
+    5: {
+      answers: ['周三晚上8點', '周三下午8點', '周三8點', '周三20點', '周三 晚上8點'],
+      explanation: '48小時 = 2天<br>周一晚上8點(20點)<br>+ 2天 = 周三晚上8點'
+    },
+    6: {
+      answers: ['周五凌晨2點', '周五2點', '周五早上2點'],
+      explanation: '26小時 = 1天 + 2小時<br>周四午夜12點(0點) + 2小時 = 周四凌晨2點<br>+ 1天 = 周五凌晨2點'
+    },
+    7: {
+      answers: ['周一下午11點', '周一晚上11點', '周一23點', '周一11點'],
+      explanation: '26小時 = 1天 + 2小時<br>周三下午1點(13點) - 2小時 = 周二下午11點(23點)<br>- 1天 = 周一下午11點'
+    },
+    8: {
+      answers: ['周五凌晨3點', '周五3點', '周五早上3點'],
+      explanation: '72小時 = 3天<br>周二凌晨3點<br>+ 3天 = 周五凌晨3點'
+    },
+    9: {
+      answers: ['周六午夜12點', '周六凌晨12點', '周六0點', '周六12點'],
+      explanation: '48小時 = 2天<br>周一午夜12點(0點)<br>- 2天 = 周六午夜12點(前2天)'
+    },
+    10: {
+      answers: ['周五下午12點', '周五中午12點', '周五12點', '周五 下午12點'],
+      explanation: '54小時 = 2天 + 6小時<br>周三下午6點(18點) + 6小時 = 周四午夜12點(0點)<br>+ 2天 = 周五午夜12點'
+    }
+  };
+
+  if (practiceData[practiceNum]) {
+    correctAnswers = practiceData[practiceNum].answers;
+    message = '<strong style="color: #00ff88;">✓ 正確！</strong><br><br>解答過程：<br>• ' + practiceData[practiceNum].explanation;
   }
 
   // 檢查答案（支持多個正確答案）
-  isCorrect = correctAnswers.some(answer => answer.includes(userAnswer) || userAnswer.includes(answer.split(/[點小時\s]/)[0]));
+  isCorrect = correctAnswers.some(answer =>
+    answer.toLowerCase().includes(userAnswer.toLowerCase()) ||
+    userAnswer.toLowerCase().includes(answer.toLowerCase())
+  );
 
   resultDiv.style.display = 'block';
   resultDiv.innerHTML = `
     <div style="padding: 15px; background: ${isCorrect ? 'rgba(0,255,136,0.15)' : 'rgba(255,107,107,0.15)'}; border: 2px solid ${isCorrect ? '#00ff88' : '#ff6b6b'}; border-radius: 8px;">
-      <div style="color: ${isCorrect ? '#00ff88' : '#ff6b6b'};">
-        ${isCorrect ? message : `<strong>❌ 答案不對</strong><br><br>${message.replace('<strong style="color: #00ff88;">✓ 正確！</strong><br><br>', '').replace('<strong>', '<strong style="color: #ff6b6b;">')}`}
+      <div style="color: ${isCorrect ? '#00ff88' : '#ff6b6b'};line-height: 1.6;">
+        ${isCorrect ? message : `<strong>❌ 答案不對，試試看吧</strong><br><br><strong>正確答案的例子：</strong><br>• ${correctAnswers[0]}`}
       </div>
     </div>
   `;
 
-  // 清空輸入框提示
+  // 視覺反饋
   if (!isCorrect) {
     answerInput.style.borderColor = '#ff6b6b';
     setTimeout(() => {
