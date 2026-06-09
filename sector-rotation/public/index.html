@@ -3,130 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台股板塊輪動追蹤 - Sector Rotation Tracker</title>
+    <title>台股板塊輪動 · Sector Rotation</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1>台股板塊輪動追蹤</h1>
-                <p class="subtitle">實時監測市場資金流向</p>
+                <h1>台股板塊輪動 <span class="subtitle-en">· Sector Rotation</span></h1>
             </div>
             <div class="header-controls">
-                <button id="refreshBtn" class="btn btn-primary">刷新數據</button>
-                <div class="view-toggle">
-                    <button class="toggle-btn active" data-view="bubble">泡泡圖</button>
-                    <button class="toggle-btn" data-view="ranking">排行榜</button>
+                <button id="refreshBtn" class="btn-refresh">刷新</button>
+                <div class="search-box">
+                    <input type="text" placeholder="搜尋板塊..." id="searchInput">
                 </div>
             </div>
         </header>
 
-        <!-- Stats Panel -->
-        <section class="stats-panel">
-            <div class="stat-card">
-                <div class="stat-label">主力</div>
-                <div class="stat-value stat-major" id="stat-major">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">輪動</div>
-                <div class="stat-value stat-rotation" id="stat-rotation">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">觀望</div>
-                <div class="stat-value stat-watching" id="stat-watching">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">退潮</div>
-                <div class="stat-value stat-declining" id="stat-declining">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">更新時間</div>
-                <div class="stat-value stat-time" id="stat-time">--:--:--</div>
-            </div>
-        </section>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Bubble Chart View -->
-            <div id="bubble-view" class="view-container active">
-                <div class="controls">
-                    <div class="filter-group">
-                        <label for="fundStatusFilter">資金狀態：</label>
-                        <select id="fundStatusFilter">
-                            <option value="">全部</option>
-                            <option value="主力">主力</option>
-                            <option value="輪動">輪動</option>
-                            <option value="觀望">觀望</option>
-                            <option value="退潮">退潮</option>
-                        </select>
-                    </div>
-                    <div class="info-text">● 圓位置 = 近5日表現 | 圓大小 = 近20日累計表現</div>
+        <div class="main-layout">
+            <!-- Left Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-label">輪動</div>
+                    <div class="sidebar-value rotating" id="stat-rotation">0</div>
+                    <div class="sidebar-desc">資金加速流入</div>
                 </div>
-                <div id="bubble-chart" class="chart-container"></div>
-            </div>
 
-            <!-- Ranking Table View -->
-            <div id="ranking-view" class="view-container">
-                <div class="controls">
-                    <div class="filter-group">
-                        <label for="rankingSortBy">排序：</label>
-                        <select id="rankingSortBy">
-                            <option value="change20d">近20日漲幅</option>
-                            <option value="change5d">近5日漲幅</option>
-                            <option value="fundAmount">法人資金</option>
-                        </select>
-                    </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-label">主力</div>
+                    <div class="sidebar-value major" id="stat-major">0</div>
+                    <div class="sidebar-desc">資金流入但放緩</div>
                 </div>
-                <table class="ranking-table">
-                    <thead>
-                        <tr>
-                            <th>排名</th>
-                            <th>板塊名稱</th>
-                            <th>資金狀態</th>
-                            <th>近5日(%)</th>
-                            <th>近20日(%)</th>
-                            <th>法人資金(NT$)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ranking-tbody">
-                    </tbody>
-                </table>
-            </div>
-        </main>
 
-        <!-- Detail Panel -->
-        <section id="detail-panel" class="detail-panel hidden">
-            <div class="detail-close" id="detailClose">×</div>
-            <div class="detail-content">
-                <h2 id="detail-sector"></h2>
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <span class="detail-label">資金狀態</span>
-                        <span class="detail-value" id="detail-status"></span>
+                <div class="sidebar-section">
+                    <div class="sidebar-label">觀望</div>
+                    <div class="sidebar-value watching" id="stat-watching">0</div>
+                    <div class="sidebar-desc">資金沉寂</div>
+                </div>
+
+                <hr class="sidebar-divider">
+
+                <div class="sidebar-list" id="sidebarList">
+                    <!-- 動態生成的列表 -->
+                </div>
+            </aside>
+
+            <!-- Center Chart Area -->
+            <main class="chart-area">
+                <div id="bubble-chart" class="bubble-chart"></div>
+            </main>
+
+            <!-- Detail Panel (Right) -->
+            <aside id="detail-panel" class="detail-panel hidden">
+                <div class="detail-content">
+                    <h2 id="detail-sector"></h2>
+
+                    <div class="detail-section">
+                        <div class="detail-item">
+                            <span class="detail-label">基本法人淨買賣超</span>
+                            <span class="detail-value" id="detail-basic"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">近5日法人淨買賣超</span>
+                            <span class="detail-value" id="detail-5d"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">近20日累計</span>
+                            <span class="detail-value" id="detail-20d"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">資金加速度</span>
+                            <span class="detail-value" id="detail-speed"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">近5日漲跌</span>
+                            <span class="detail-value" id="detail-change"></span>
+                        </div>
                     </div>
-                    <div class="detail-item">
-                        <span class="detail-label">近5日漲幅</span>
-                        <span class="detail-value" id="detail-change5d"></span>
+
+                    <div class="detail-section">
+                        <div class="detail-label">軸動</div>
+                        <div class="detail-stocks" id="detail-stocks"></div>
                     </div>
-                    <div class="detail-item">
-                        <span class="detail-label">近20日累計</span>
-                        <span class="detail-value" id="detail-change20d"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">法人資金流向</span>
-                        <span class="detail-value" id="detail-fund"></span>
+
+                    <div class="detail-section">
+                        <div class="detail-label">代票數</div>
+                        <div class="detail-codes" id="detail-codes"></div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </aside>
+        </div>
 
         <!-- Footer -->
         <footer class="footer">
-            <p>免責聲明：本網站資訊僅供參考，不構成任何投資建議。投資有風險，請謹慎操作。</p>
-            <p>數據來源：台灣證券交易所 | 更新頻率：每日收盤後</p>
+            <p>免責聲明：本網站資訊僅供參考，不構成任何投資建議。</p>
+            <p>數據來源：台灣證券交易所｜更新頻率：每日收盤後</p>
         </footer>
     </div>
 
