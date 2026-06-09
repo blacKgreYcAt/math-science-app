@@ -8,89 +8,62 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <h1>台股板塊輪動 <span class="subtitle-en">· Sector Rotation</span></h1>
-            </div>
-            <div class="header-controls">
-                <button id="refreshBtn" class="btn-refresh">刷新</button>
-                <div class="search-box">
-                    <input type="text" placeholder="搜尋板塊..." id="searchInput">
-                </div>
-            </div>
-        </header>
+    <div class="app-wrapper">
+        <!-- Top Info Bar -->
+        <div class="info-bar">
+            <span>資料日期：2026-06-08</span>
+            <span>盤後更新：2026/06/08 23:19（台灣時間）</span>
+        </div>
 
         <div class="main-layout">
             <!-- Left Sidebar -->
             <aside class="sidebar">
-                <div class="sidebar-section">
-                    <div class="sidebar-label">輪動</div>
-                    <div class="sidebar-value rotating" id="stat-rotation">0</div>
-                    <div class="sidebar-desc">資金加速流入</div>
+                <div class="status-card" data-status="主力">
+                    <div class="status-label">主力</div>
+                    <div class="status-value">14</div>
+                    <div class="status-desc">資金加速流入</div>
                 </div>
 
-                <div class="sidebar-section">
-                    <div class="sidebar-label">主力</div>
-                    <div class="sidebar-value major" id="stat-major">0</div>
-                    <div class="sidebar-desc">資金流入但放緩</div>
+                <div class="status-card" data-status="短期">
+                    <div class="status-label">短期</div>
+                    <div class="status-value">8</div>
+                    <div class="status-desc">資金流入但放緩</div>
                 </div>
 
-                <div class="sidebar-section">
-                    <div class="sidebar-label">觀望</div>
-                    <div class="sidebar-value watching" id="stat-watching">0</div>
-                    <div class="sidebar-desc">資金沉寂</div>
+                <div class="status-card" data-status="觀望">
+                    <div class="status-label">觀望</div>
+                    <div class="status-value">0</div>
+                    <div class="status-desc">資金沉寂</div>
                 </div>
 
-                <hr class="sidebar-divider">
+                <div class="status-card" data-status="觀察">
+                    <div class="status-label">觀察</div>
+                    <div class="status-value">56</div>
+                    <div class="status-desc">資金流出</div>
+                </div>
 
-                <div class="sidebar-list" id="sidebarList">
-                    <!-- 動態生成的列表 -->
+                <hr>
+
+                <div class="trending-list" id="trending-list">
+                    <!-- Dynamically populated -->
                 </div>
             </aside>
 
-            <!-- Center Chart Area -->
-            <main class="chart-area">
+            <!-- Center Chart -->
+            <main class="chart-container">
                 <div id="bubble-chart" class="bubble-chart"></div>
             </main>
 
-            <!-- Detail Panel (Right) -->
-            <aside id="detail-panel" class="detail-panel hidden">
-                <div class="detail-content">
-                    <h2 id="detail-sector"></h2>
+            <!-- Right Detail Panel -->
+            <aside id="detail-panel" class="detail-panel">
+                <div class="detail-header">
+                    <h2 class="detail-title">板塊名稱</h2>
+                    <span class="detail-close">×</span>
+                </div>
 
-                    <div class="detail-section">
-                        <div class="detail-item">
-                            <span class="detail-label">基本法人淨買賣超</span>
-                            <span class="detail-value" id="detail-basic"></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">近5日法人淨買賣超</span>
-                            <span class="detail-value" id="detail-5d"></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">近20日累計</span>
-                            <span class="detail-value" id="detail-20d"></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">資金加速度</span>
-                            <span class="detail-value" id="detail-speed"></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">近5日漲跌</span>
-                            <span class="detail-value" id="detail-change"></span>
-                        </div>
-                    </div>
-
-                    <div class="detail-section">
-                        <div class="detail-label">軸動</div>
-                        <div class="detail-stocks" id="detail-stocks"></div>
-                    </div>
-
-                    <div class="detail-section">
-                        <div class="detail-label">代票數</div>
-                        <div class="detail-codes" id="detail-codes"></div>
+                <div class="detail-body">
+                    <div class="sub-categories" id="sub-categories">
+                        <!-- Dynamically populated -->
                     </div>
                 </div>
             </aside>

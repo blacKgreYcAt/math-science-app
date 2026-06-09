@@ -1,10 +1,11 @@
-// Taiwan Stock Sector Rotation - Law Person Fund Flow
-// 基於法人資金流向的板塊輪動追蹤
+// Taiwan Stock Sector Rotation Tracker - Complete Implementation
+// Based on https://sectorrotation.netlify.app/
 
 class SectorRotationApp {
     constructor() {
-        this.data = [];
+        this.allData = [];
         this.filteredData = [];
+        this.selectedStatus = null;
         this.init();
     }
 
@@ -15,31 +16,19 @@ class SectorRotationApp {
     }
 
     setupEventListeners() {
-        // Refresh button
-        document.getElementById('refreshBtn').addEventListener('click', () => this.refreshData());
-
-        // Search
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            this.filterBySearch(e.target.value);
-        });
-
-        // Detail panel close (click outside)
+        // Status filter clicks on left sidebar
         document.addEventListener('click', (e) => {
-            const detailPanel = document.getElementById('detail-panel');
-            if (!detailPanel.contains(e.target) && !e.target.classList.contains('bubble')) {
-                this.closeDetailPanel();
+            const statCard = e.target.closest('[data-status]');
+            if (statCard) {
+                const status = statCard.dataset.status;
+                this.selectStatus(status);
             }
         });
 
-        // Sidebar items
+        // Detail panel close
         document.addEventListener('click', (e) => {
-            if (e.target.closest('.sidebar-item')) {
-                const item = e.target.closest('.sidebar-item');
-                const sectorName = item.dataset.sector;
-                const sector = this.data.find(s => s.sector === sectorName);
-                if (sector) {
-                    this.showDetailPanel(sector);
-                }
+            if (e.target.id === 'detail-panel' || e.target.closest('.detail-close')) {
+                this.closeDetailPanel();
             }
         });
     }
@@ -48,272 +37,201 @@ class SectorRotationApp {
         try {
             const response = await fetch('/api/fetch-data');
             const result = await response.json();
-
             if (result.success) {
-                this.data = result.data;
-                this.filteredData = [...this.data];
+                this.allData = result.data;
             } else {
-                console.log('API failed, using mock data');
-                this.loadFallbackData();
+                this.loadMockData();
             }
         } catch (error) {
-            console.log('Error loading data, using mock data:', error.message);
-            this.loadFallbackData();
+            console.log('Using mock data:', error.message);
+            this.loadMockData();
         }
+
+        this.filteredData = [...this.allData];
     }
 
-    loadFallbackData() {
-        console.log('Loading mock sector data...');
-        this.data = this.generateMockSectorData();
-        this.filteredData = [...this.data];
-    }
-
-    generateMockSectorData() {
-        // 使用TWSE產業分類和法人資金流向數據
-        const sectors = [
+    loadMockData() {
+        this.allData = [
             {
-                sector: '智慧型手機',
-                code: '2317',
-                basicFundFlow: -14.22,
-                flow5d: 182.11,
-                flow20d: 1245.37,
-                accelerationSpeed: -25.85,
-                change5d: -4.56,
-                stocks: ['2317', '2354', '2392'],
-                fundStatus: '觀望'
-            },
-            {
+                id: 1,
                 sector: '整合電路製造',
-                code: '2330',
-                basicFundFlow: 45.67,
-                flow5d: 256.34,
-                flow20d: 1856.92,
-                accelerationSpeed: 18.23,
+                status: '主力',
+                flow5d: 298.3,
+                flow20d: 1245.37,
+                accelerationSpeed: 25.85,
                 change5d: 3.45,
-                stocks: ['2330', '2331', '2379'],
-                fundStatus: '主力'
+                subCategories: [
+                    { name: 'AI 晶圓組裝', value: 298.3 },
+                    { name: 'EMS 電子代工', value: 295.1 },
+                    { name: '整合無線外', value: 270.1 }
+                ],
+                color: '#d4a844' // 黃色/金色
             },
             {
-                sector: '記憶體類組',
-                code: '2448',
-                basicFundFlow: 12.34,
-                flow5d: 145.67,
-                flow20d: 923.45,
-                accelerationSpeed: -8.90,
-                change5d: 1.23,
-                stocks: ['2448', '2474', '3034'],
-                fundStatus: '輪動'
-            },
-            {
-                sector: 'NOR Flash與磁盤機',
-                code: '2357',
-                basicFundFlow: -8.45,
-                flow5d: 67.89,
-                flow20d: 456.78,
-                accelerationSpeed: -12.34,
-                change5d: -2.15,
-                stocks: ['2357', '2388', '2395'],
-                fundStatus: '觀望'
-            },
-            {
-                sector: 'IC設計',
-                code: '3034',
-                basicFundFlow: 23.45,
-                flow5d: 178.90,
-                flow20d: 1123.45,
-                accelerationSpeed: 15.67,
+                id: 2,
+                sector: '銀行金融',
+                status: '主力',
+                flow5d: 219.2,
+                flow20d: 856.92,
+                accelerationSpeed: 18.23,
                 change5d: 2.89,
-                stocks: ['3034', '3050', '3211'],
-                fundStatus: '輪動'
+                subCategories: [
+                    { name: '金控公司', value: 219.2 },
+                    { name: '銀行', value: 185.3 },
+                    { name: '保險', value: 152.4 }
+                ],
+                color: '#e97755' // 橙色/紅色
             },
             {
-                sector: '電子零組件',
-                code: '2308',
-                basicFundFlow: -5.67,
-                flow5d: 89.23,
-                flow20d: 567.89,
-                accelerationSpeed: -10.23,
-                change5d: -1.45,
-                stocks: ['2308', '2311', '2313'],
-                fundStatus: '觀望'
-            },
-            {
-                sector: '光磊',
-                code: '2340',
-                basicFundFlow: 34.56,
-                flow5d: 212.34,
-                flow20d: 1456.78,
-                accelerationSpeed: 22.11,
-                change5d: 3.67,
-                stocks: ['2340', '2342', '2344'],
-                fundStatus: '主力'
-            },
-            {
-                sector: '面板',
-                code: '2408',
-                basicFundFlow: -12.34,
-                flow5d: -45.67,
-                flow20d: -234.56,
-                accelerationSpeed: -28.90,
-                change5d: -5.67,
-                stocks: ['2408', '2409', '2412'],
-                fundStatus: '退潮'
-            },
-            {
-                sector: '連接器',
-                code: '2414',
-                basicFundFlow: 15.67,
-                flow5d: 123.45,
-                flow20d: 789.23,
-                accelerationSpeed: 9.87,
-                change5d: 2.34,
-                stocks: ['2414', '2416', '2420'],
-                fundStatus: '輪動'
-            },
-            {
-                sector: '光寶科',
-                code: '2430',
-                basicFundFlow: 8.90,
-                flow5d: 98.76,
-                flow20d: 654.32,
-                accelerationSpeed: 5.43,
+                id: 3,
+                sector: '雲端與...',
+                status: '短期',
+                flow5d: 96.3,
+                flow20d: 523.45,
+                accelerationSpeed: 12.34,
                 change5d: 1.56,
-                stocks: ['2430', '2433', '2436'],
-                fundStatus: '輪動'
+                subCategories: [
+                    { name: '雲端基礎設施', value: 96.3 },
+                    { name: '資料中心', value: 78.9 },
+                    { name: 'SaaS應用', value: 67.5 }
+                ],
+                color: '#f97316' // 橙色
+            },
+            {
+                id: 4,
+                sector: 'AI 先進',
+                status: '短期',
+                flow5d: 187.65,
+                flow20d: 934.23,
+                accelerationSpeed: 15.67,
+                change5d: 2.34,
+                subCategories: [
+                    { name: 'AI晶片', value: 187.65 },
+                    { name: 'AI軟體', value: 156.3 },
+                    { name: 'AI服務', value: 134.7 }
+                ],
+                color: '#8bc34a' // 綠色
+            },
+            {
+                id: 5,
+                sector: '記憶體類',
+                status: '觀望',
+                flow5d: -45.67,
+                flow20d: 234.56,
+                accelerationSpeed: -8.9,
+                change5d: -1.23,
+                subCategories: [
+                    { name: 'DRAM', value: -45.67 },
+                    { name: 'NAND Flash', value: -23.4 },
+                    { name: '3D NAND', value: 12.3 }
+                ],
+                color: '#22c55e' // 綠色
+            },
+            {
+                id: 6,
+                sector: '離岸風...',
+                status: '觀察',
+                flow5d: 0.0,
+                flow20d: -234.56,
+                accelerationSpeed: -28.9,
+                change5d: -5.67,
+                subCategories: [
+                    { name: '風機製造', value: 0.0 },
+                    { name: '海上安裝', value: -45.3 },
+                    { name: '維運服務', value: -78.9 }
+                ],
+                color: '#ef4444' // 紅色
+            },
+            {
+                id: 7,
+                sector: 'CPU...',
+                status: '觀察',
+                flow5d: -1182.3,
+                flow20d: -1123.45,
+                accelerationSpeed: -45.2,
+                change5d: -8.9,
+                subCategories: [
+                    { name: 'CPU設計', value: -1182.3 },
+                    { name: 'GPU製造', value: -856.7 },
+                    { name: 'SoC開發', value: -634.2 }
+                ],
+                color: '#22c55e' // 綠色
             }
         ];
-
-        return sectors.map((s, idx) => ({
-            id: idx + 1,
-            sector: s.sector,
-            code: s.code,
-            basicFundFlow: s.basicFundFlow,      // 基本法人淨買賣超（億）
-            flow5d: s.flow5d,                    // 近5日法人資金流向（億）
-            flow20d: s.flow20d,                  // 近20日累計（億）
-            accelerationSpeed: s.accelerationSpeed,  // 資金加速度（億/天）
-            change5d: s.change5d,                // 近5日漲跌（%）
-            stocks: s.stocks,                    // 代表股票
-            fundStatus: s.fundStatus,
-            timestamp: new Date().toISOString()
-        }));
     }
 
-    async refreshData() {
-        const btn = document.getElementById('refreshBtn');
-        btn.textContent = '刷新中...';
-        btn.disabled = true;
-
-        await this.loadData();
-        this.render();
-
-        btn.textContent = '刷新';
-        btn.disabled = false;
-    }
-
-    filterBySearch(query) {
-        if (!query.trim()) {
-            this.filteredData = [...this.data];
+    selectStatus(status) {
+        // Toggle selection
+        if (this.selectedStatus === status) {
+            this.selectedStatus = null;
+            this.filteredData = [...this.allData];
         } else {
-            const lowerQuery = query.toLowerCase();
-            this.filteredData = this.data.filter(d =>
-                d.sector.toLowerCase().includes(lowerQuery) ||
-                d.code.includes(query)
-            );
+            this.selectedStatus = status;
+            this.filteredData = this.allData.filter(d => d.status === status);
         }
-        this.render();
-    }
 
-    render() {
-        this.updateStats();
-        this.updateSidebar();
+        // Update UI and re-render
+        this.updateStatuses();
         this.renderBubbleChart();
     }
 
-    updateStats() {
-        const rotatCount = this.data.filter(s => s.fundStatus === '輪動').length;
-        const majorCount = this.data.filter(s => s.fundStatus === '主力').length;
-        const watchCount = this.data.filter(s => s.fundStatus === '觀望').length;
+    updateStatuses() {
+        // Recalculate status counts from filtered data
+        const data = this.selectedStatus ? this.allData : this.filteredData;
 
-        const rotatingEl = document.getElementById('stat-rotation');
-        const majorEl = document.getElementById('stat-major');
-        const watchEl = document.getElementById('stat-watching');
+        document.querySelectorAll('[data-status]').forEach(el => {
+            const status = el.dataset.status;
+            const count = data.filter(d => d.status === status).length;
+            const valueEl = el.querySelector('.status-value');
+            if (valueEl) valueEl.textContent = count;
 
-        if (rotatingEl) rotatingEl.textContent = rotatCount;
-        if (majorEl) majorEl.textContent = majorCount;
-        if (watchEl) watchEl.textContent = watchCount;
-    }
-
-    updateSidebar() {
-        const sidebarList = document.getElementById('sidebarList');
-        sidebarList.innerHTML = '';
-
-        // 按法人資金流向排序
-        const sorted = [...this.data].sort((a, b) => b.flow20d - a.flow20d);
-
-        sorted.slice(0, 8).forEach(sector => {
-            const item = document.createElement('div');
-            item.className = 'sidebar-item';
-            item.dataset.sector = sector.sector;
-
-            const flow = sector.flow20d;
-            const isPositive = flow >= 0;
-
-            item.innerHTML = `
-                <div class="sidebar-item-name">${sector.sector}</div>
-                <div class="sidebar-item-value ${isPositive ? 'positive' : 'negative'}">
-                    ${isPositive ? '+' : ''}${flow.toFixed(2)}<span style="font-size: 11px;">億</span>
-                </div>
-            `;
-
-            item.addEventListener('click', () => this.showDetailPanel(sector));
-            sidebarList.appendChild(item);
+            if (this.selectedStatus === status) {
+                el.classList.add('active');
+            } else {
+                el.classList.remove('active');
+            }
         });
     }
 
+    render() {
+        this.updateStatuses();
+        this.renderBubbleChart();
+    }
+
     renderBubbleChart() {
-        createBubbleChart(this.filteredData, (sector) => this.showDetailPanel(sector));
+        createBubbleChart(
+            this.filteredData,
+            this.selectedStatus,
+            (sector) => this.showDetailPanel(sector)
+        );
     }
 
     showDetailPanel(sector) {
-        document.getElementById('detail-sector').textContent = sector.sector;
-        document.getElementById('detail-basic').textContent =
-            `${sector.basicFundFlow > 0 ? '+' : ''}${sector.basicFundFlow.toFixed(2)}億`;
-        document.getElementById('detail-5d').textContent =
-            `${sector.flow5d > 0 ? '+' : ''}${sector.flow5d.toFixed(2)}億`;
-        document.getElementById('detail-20d').textContent =
-            `${sector.flow20d > 0 ? '+' : ''}${sector.flow20d.toFixed(2)}億`;
-        document.getElementById('detail-speed').textContent =
-            `${sector.accelerationSpeed > 0 ? '+' : ''}${sector.accelerationSpeed.toFixed(2)}億/天`;
-
-        const changeElement = document.getElementById('detail-change');
-        changeElement.textContent = `${sector.change5d > 0 ? '+' : ''}${sector.change5d.toFixed(2)}%`;
-        changeElement.className = 'detail-value ' + (sector.change5d >= 0 ? 'positive' : 'negative');
-
-        // 代表股票
-        const stocksHtml = sector.stocks.map(code =>
-            `<div class="stock-tag">${code}</div>`
-        ).join('');
-        document.getElementById('detail-stocks').innerHTML = stocksHtml;
-
-        // 代票數
-        document.getElementById('detail-codes').textContent = sector.stocks.join(' · ');
-
         const panel = document.getElementById('detail-panel');
-        panel.classList.remove('hidden');
+        const title = panel.querySelector('.detail-title');
+        const subCategoriesEl = panel.querySelector('.sub-categories');
+
+        title.textContent = sector.sector;
+
+        // Show sub-categories
+        subCategoriesEl.innerHTML = sector.subCategories
+            .map(sub => `
+                <div class="sub-category">
+                    <span>${sub.name}</span>
+                    <span class="value ${sub.value >= 0 ? 'positive' : 'negative'}">
+                        ${sub.value >= 0 ? '+' : ''}${sub.value.toFixed(1)}億
+                    </span>
+                </div>
+            `)
+            .join('');
+
         panel.classList.add('active');
     }
 
     closeDetailPanel() {
-        const panel = document.getElementById('detail-panel');
-        panel.classList.remove('active');
-        setTimeout(() => panel.classList.add('hidden'), 300);
+        document.getElementById('detail-panel').classList.remove('active');
     }
 }
 
-// Initialize App
+// Initialize app
 const app = new SectorRotationApp();
-
-// Auto-refresh every 5 minutes
-setInterval(() => {
-    app.refreshData();
-}, 5 * 60 * 1000);
