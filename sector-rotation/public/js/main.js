@@ -96,28 +96,40 @@ class SectorRotationApp {
 
     generateMockSectorData() {
         const sectors = [
-            { sector: '電子業', fundStatus: '主力' },
-            { sector: '金融業', fundStatus: '輪動' },
-            { sector: '觀光旅遊', fundStatus: '主力' },
-            { sector: '塑膠製品', fundStatus: '退潮' },
-            { sector: '水泥業', fundStatus: '觀望' },
-            { sector: '鋼鐵業', fundStatus: '退潮' },
-            { sector: '食品業', fundStatus: '輪動' },
-            { sector: '半導體', fundStatus: '主力' },
-            { sector: '汽車業', fundStatus: '觀望' },
-            { sector: '紡織業', fundStatus: '輪動' }
+            { sector: '電子業', code: '2330', change5d: 2.45, change20d: 8.32 },
+            { sector: '金融業', code: '2884', change5d: -0.85, change20d: 3.21 },
+            { sector: '觀光旅遊', code: '2704', change5d: 5.32, change20d: 12.15 },
+            { sector: '塑膠製品', code: '1101', change5d: -1.23, change20d: -2.18 },
+            { sector: '水泥業', code: '1102', change5d: 0.56, change20d: 4.18 },
+            { sector: '鋼鐵業', code: '2002', change5d: -2.34, change20d: 1.45 },
+            { sector: '食品業', code: '1216', change5d: 3.12, change20d: 6.72 },
+            { sector: '半導體', code: '2317', change5d: 4.28, change20d: 15.34 },
+            { sector: '汽車業', code: '2201', change5d: -0.67, change20d: 2.05 },
+            { sector: '紡織業', code: '1456', change5d: 1.45, change20d: -1.28 }
         ];
 
-        return sectors.map((sector, idx) => ({
-            id: idx + 1,
-            sector: sector.sector,
-            code: '2330' + idx,
-            change5d: parseFloat((Math.random() * 8 - 4).toFixed(2)),
-            change20d: parseFloat((Math.random() * 20 - 5).toFixed(2)),
-            fundStatus: sector.fundStatus,
-            fundAmount: Math.floor(Math.random() * 10000000000),
-            timestamp: new Date().toISOString()
-        }));
+        return sectors.map((sector, idx) => {
+            // 根據漲幅判斷資金狀態
+            let fundStatus = '觀望';
+            if (sector.change5d > 1 && sector.change20d > 3) {
+                fundStatus = '主力';
+            } else if (sector.change5d > 0 && sector.change20d > 0) {
+                fundStatus = '輪動';
+            } else if (sector.change5d < -1 || sector.change20d < -2) {
+                fundStatus = '退潮';
+            }
+
+            return {
+                id: idx + 1,
+                sector: sector.sector,
+                code: sector.code,
+                change5d: sector.change5d,
+                change20d: sector.change20d,
+                fundStatus: fundStatus,
+                fundAmount: Math.floor(Math.random() * 10000000000),
+                timestamp: new Date().toISOString()
+            };
+        });
     }
 
     async refreshData() {

@@ -346,12 +346,12 @@ body {
 }
 
 .change-positive {
-    color: var(--status-major);
+    color: #ef4444;
     font-weight: 600;
 }
 
 .change-negative {
-    color: var(--status-declining);
+    color: #10b981;
     font-weight: 600;
 }
 
